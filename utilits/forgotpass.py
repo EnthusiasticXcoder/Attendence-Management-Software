@@ -28,9 +28,9 @@ def forgot(userid):
         messagebox.showerror("Error","Unable to forgot password")
 
 def sendmail(userid,password):
-    email_sender='attendence.login2022@gmail.com'
-    email_password= "xzqv ekbm roax auqi"
-    email_receiver = 'vkgupta.419@gmail.com'
+    email_sender='enter mail id'
+    email_password= "enter api password"
+    email_receiver = 'enter mail id'
 
     subject = "Request to forgot passward"
 
