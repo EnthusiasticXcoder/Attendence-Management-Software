@@ -1,5 +1,4 @@
 import os
-from threading import Lock
 from tkinter import messagebox,filedialog
 
 from pydrive.auth import GoogleAuth
@@ -10,11 +9,9 @@ gauth = GoogleAuth()
 drive = GoogleDrive(gauth)
 
 
-l=Lock()
-
 def get_folderid(foldername):
     try:
-        folder="1IZzpZ-uXQP1Fu4_A2fU4-fi2-hGqMCQg"
+        folder="Enter your google drive folder id"
         folder_list = drive.ListFile({'q' : f"'{folder}' in parents and trashed=false"}).GetList()
 
         for gfolder in folder_list:
@@ -33,7 +30,7 @@ def get_folderid(foldername):
 
 def dfolder(foldername):
     try:
-        folder="1IZzpZ-uXQP1Fu4_A2fU4-fi2-hGqMCQg"
+        folder="Enter your google drive folder id"
         folder_list = drive.ListFile({'q' : f"'{folder}' in parents and trashed=false"}).GetList()
         for gfolder in folder_list:
             if gfolder['title'] == foldername:
