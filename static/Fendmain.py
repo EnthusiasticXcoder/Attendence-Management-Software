@@ -1,64 +1,39 @@
 from shutil import rmtree
-from tkinter import *
+import customtkinter as ctk
 from threading import Thread
 
-import static.pages.adminpage as adminpage
-import static.pages.Loginpage as loginpage
-import static.pages.userpage as userpage
-import static.ExcelTopup as ExcelTopup
+from static.pages import Loginpage as page 
 
 from utilits import Drive_uplode
 
 
-class adda:      
-    def __init__(self , root , menu , folder , file ):
-        menu.add_command ( label=file['title'],
-                               font=('Goudy old style', 15),
-                               command=lambda:ExcelTopup.see_excel( root , f"workbooks/{folder}/{file['title']}" ) )
-
-class Fmain(Tk):
-    def __init__(self) :
-        super().__init__()
+class Fmain(ctk.CTk):
+    def __init__(self, *args, fg_color="default_theme", **kwargs):
+        super().__init__(*args, fg_color=fg_color, **kwargs)
 
         self.logout=False
         self.iconbitmap('images\MetroUI-Apps-Notepad-icon.ico')
         self.title("Attendence")
+        self.wm_geometry('1342x814+235+66')
+        self.wm_minsize(1340,810)
+        self.state('zoomed')
+
         self.rowconfigure(0, weight=1)
         self.columnconfigure(0, weight=1)
-        self.geometry('1520x830+0+0')
 
-        self.Login_frame = Frame(self)
-        self.user_frame = Frame(self)
-        self.admin_frame = Frame(self)
+        self.Login=page.LoginFrame(master=self)
+        self.Login.grid(row=0, column=0, sticky='nsew')
 
-        self.Login = loginpage.loginpage(self.Login_frame)
-        self.user = userpage.userpage(self.user_frame)
-        self.admin = adminpage.adminpage(self.admin_frame)
-
-        for frame in (self.Login_frame, self.user_frame , self.admin_frame):
-            frame.grid(row=0, column=0, sticky='nsew')
+        self.set_Scaling()
         
-        self.Login_frame.tkraise()
-
-    def adda(self,root,button,folder):
-        menu =  Menu ( button, tearoff = 0 )
-        button["menu"] =  menu
-        file=Drive_uplode.get_files(folder)
-        if file==[]:
-            menu.add_command ( label="---- NO FILE TO DOWNLOAD ----",
-                               command=lambda:None )
-            for i in range(5):
-                menu.add_command ( label=" ",
-                               command=lambda:None )
-
-        for f in file:
-            adda(root,menu,folder,f)
+        self.Login.tkraise()
+    
         
     def log_out(self,stor):
         self.logout=True
         self.end(stor)
-        self.Login.pass_entry.delete(0,"end")
-        self.Login_frame.tkraise()
+        self.Login.Password.delete(0,"end")
+        self.Login.tkraise()
     
     def end(self,stor):
         Thread(target=Drive_uplode.upload_files).start()
@@ -66,3 +41,34 @@ class Fmain(Tk):
             Drive_uplode.upload_files(folder=folder)
             rmtree(f"workbooks/{folder}")
         Thread(target=upload,args=(stor.admin_name,)).start()
+    
+    
+
+    def set_Scaling(self):
+        factor=1.25 if self.winfo_height()> 1000 and self.winfo_width()>1900 else 1
+        scal=ctk.ScalingTracker.get_window_scaling(self)
+        if scal==factor:
+            return
+        else:
+            scal=factor/scal
+            ctk.set_spacing_scaling(scal)
+            ctk.set_widget_scaling(scal)
+            ctk.set_window_scaling(scal)
+
+
+if __name__=="__main__":
+    r=ctk.CTk()
+    r.title("CustomTkinter complex_example.py")
+    r.state('zoomed')
+
+    ctk.set_appearance_mode("System")  # Modes: "System" (standard), "Dark", "Light"
+    ctk.set_default_color_theme("blue")
+
+    r.rowconfigure(0, weight=1)
+    r.columnconfigure(0, weight=1)
+        # ============ create two frames ============
+    
+    r.mainloop()
+
+
+

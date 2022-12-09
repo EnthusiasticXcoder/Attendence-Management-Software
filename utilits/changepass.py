@@ -23,9 +23,9 @@ def login(userid,passward):
     except :
         messagebox.showerror("Error","Unknown login error")
 
-def changepass(userid,password,newpassward,cnewpassward,pass_entry):
+def changepass(userid,password,newpassward,confirmpassward,pass_entry):
     try:
-        if newpassward != cnewpassward :
+        if newpassward != confirmpassward :
             messagebox.showerror("Error","passward and confirm passward should be same")
             return
         if password ==" " or newpassward==" " :

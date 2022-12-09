@@ -1,7 +1,56 @@
-from tkinter import *
+import customtkinter as ctk
+
+class changepassFrame(ctk.CTkFrame):
+    def __init__(self, *args, 
+                 bg_color=None, 
+                 fg_color="default_theme", 
+                 border_color="default_theme", 
+                 border_width="default_theme", 
+                 corner_radius="default_theme", 
+                 width=200, height=200, 
+                 overwrite_preferred_drawing_method: str = None, 
+                 **kwargs):
+
+        super().__init__(*args, bg_color=bg_color, 
+                         fg_color=fg_color, 
+                         border_color=border_color, 
+                         border_width=border_width, 
+                         corner_radius=corner_radius,
+                         width=width, height=height, 
+                         overwrite_preferred_drawing_method=overwrite_preferred_drawing_method,
+                         **kwargs)
+        
+        label = ctk.CTkLabel(master=self,
+                                  text="Change Password",
+                                  text_font=("times new roman",15)) 
+        label.grid(row=0, column=0, pady=10, padx=10)
+
+        self.OldPass = ctk.CTkEntry(master=self,
+                                  width=120,
+                                  placeholder_text="Old Password")
+        self.NewPass = ctk.CTkEntry(master=self,
+                                  width=120,
+                                  placeholder_text="New Password")
+        self.ConfirmPass = ctk.CTkEntry(master=self,
+                                  width=120,
+                                  placeholder_text="Confirm New Password")
+        
+        self.OldPass.grid(row=1, column=0, columnspan=2, pady=7, padx=20, sticky="we")
+        self.NewPass.grid(row=2, column=0, columnspan=2, pady=7, padx=20, sticky="we")
+        self.ConfirmPass.grid(row=3, column=0, columnspan=2, pady=7, padx=20, sticky="we")
+
+        self.SaveButton = ctk.CTkButton(master=self,
+                                        text="Save",
+                                        border_width=2 )
+        
+        self.SaveButton.grid(row=4, column=1, columnspan=1, pady=20, padx=20, sticky="we")
 
 
-class changepasspage:
+
+
+
+
+'''class changepasspage:
 
     def __init__(self,page1) -> None:
         self.chang=Frame(page1)
@@ -64,3 +113,4 @@ class changepasspage:
         self.B_save.configure(width=10,pady=7,text="Save",font=("times new roman",15),bg="dodgerblue4",fg="white",border=0)
         self.B_save.place(x=250,y=370)
 
+'''

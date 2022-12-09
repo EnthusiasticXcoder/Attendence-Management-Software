@@ -17,47 +17,44 @@ def cheackentry(userid):
         messagebox.showerror("Error","Unknown error")
 
 #=======create admin=======
-def createadmin(admin,userid,passward,cpassward):
+def createadmin(adminName,admin,userid,passward,cpassward):
     try:
         if admin :
-            admin = 'admin'
-
-        if cpassward == passward:
-            if cheackentry(userid):
-                with open("users/logindata.dat","ab") as f :
-                    encoded=encript.encode64(f'{admin} {userid} {passward}')
-                    f.write(encoded)
-                
-                with open("users/logindata.dat","a") as f :
-                    f.write(" \n")
-                
-                Thread(target=Drive_uplode.upload_files,args=('user','logindata.dat')).start()
-                Thread(target=Drive_uplode.get_folderid,args=(userid,)).start()
-                messagebox.showinfo("Save","Admin Entry saved")
-            else :
-                messagebox.showerror("Error","select another username")
+            if cpassward == passward:
+                if cheackentry(userid):
+                    with open("users/logindata.dat","ab") as f :
+                        encoded=encript.encode64(f'admin {userid} {passward}')
+                        f.write(encoded)
+                    
+                    with open("users/logindata.dat","a") as f :
+                        f.write(" \n")
+                    
+                    Thread(target=Drive_uplode.upload_files,args=('user','logindata.dat')).start()
+                    Thread(target=Drive_uplode.get_folderid,args=(userid,)).start()
+                    messagebox.showinfo("Save","Admin Entry saved")
+                else :
+                    messagebox.showerror("Error","select another username")
+            else:
+                messagebox.showerror("Error","passward And confirm passward should be same")
         else:
-            messagebox.showerror("Error","passward And confirm passward should be same")
+            createuser(adminName,userid,passward,cpassward)
     except:
         messagebox.showerror("Error","Unknown error")
 
 #======================= sineup  ==============================================================
    
 def createuser(admin,userid,passward,cpassward):
-    try:
-        if cpassward == passward:
-            if cheackentry(userid):
-                with open("users/logindata.dat","ab") as f :
-                    encoded=encript.encode64(f'{admin} {userid} {passward}')
-                    f.write(encoded)
+    if cpassward == passward:
+        if cheackentry(userid):
+            with open("users/logindata.dat","ab") as f :
+                encoded=encript.encode64(f'{admin} {userid} {passward}')
+                f.write(encoded)
                 
-                with open("users/logindata.dat","a") as f :
-                    f.write(" \n")
-                Thread(target=Drive_uplode.upload_files,args=('user','logindata.dat')).start()
-                messagebox.showinfo("Save","User Entry saved")
-            else :
-                messagebox.showerror("Error","select another username")
-        else:
-            messagebox.showerror("Error","passward And confirm passward should be same")
-    except:
-        messagebox.showerror("Error","Unknown error")
+            with open("users/logindata.dat","a") as f :
+                f.write(" \n")
+            Thread(target=Drive_uplode.upload_files,args=('user','logindata.dat')).start()
+            messagebox.showinfo("Save","User Entry saved")
+        else :
+            messagebox.showerror("Error","select another username")
+    else:
+        messagebox.showerror("Error","passward And confirm passward should be same")

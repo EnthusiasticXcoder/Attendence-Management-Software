@@ -1,6 +1,59 @@
-from tkinter import *
+import tkinter as tk
+import customtkinter as ctk
 
 
+class CreateAdminFrame(ctk.CTkFrame):
+    def __init__(self, *args, admin,
+                 bg_color=None, 
+                 fg_color="default_theme", 
+                 border_color="default_theme", 
+                 border_width="default_theme", 
+                 corner_radius="default_theme", 
+                 width=200, height=200, 
+                 overwrite_preferred_drawing_method: str = None, 
+                 **kwargs):
+
+        super().__init__(*args, bg_color=bg_color, 
+                         fg_color=fg_color, 
+                         border_color=border_color, 
+                         border_width=border_width, 
+                         corner_radius=corner_radius,
+                         width=width, height=height, 
+                         overwrite_preferred_drawing_method=overwrite_preferred_drawing_method,
+                         **kwargs)
+        text= "Admin Sign Up" if admin else "User Sign Up"
+        label = ctk.CTkLabel( master=self,
+                              text=text,
+                              text_font=("times new roman",15))
+        label.grid(row=0, column=0, pady=10, sticky="w")
+
+        self.EnterUserName = ctk.CTkEntry(master=self,
+                                          width=120,
+                                          placeholder_text="Enter UserName" )
+        self.EnterUserName.grid(row=1, column=0, columnspan=2, pady=7, padx=20, sticky="we")
+
+        self.EnterPassword = ctk.CTkEntry(master=self,
+                                  width=120,
+                                  placeholder_text="Enter Password" )
+        self.EnterPassword.grid(row=2, column=0, columnspan=2, pady=7, padx=20, sticky="we")
+
+        self.ConfirmPassword = ctk.CTkEntry(master=self,
+                                          width=120,
+                                          placeholder_text="Confirm Password" )
+        self.ConfirmPassword.grid(row=3, column=0, columnspan=2, pady=7, padx=20, sticky="we")
+        
+        self.SaveButton = ctk.CTkButton(master=self,
+                                      text="Save" )
+        self.SaveButton.grid(row=4, column=1, pady=20, padx=20)
+
+
+
+
+
+
+
+
+'''
 class enteradminpage : 
     def __init__(self,page1) -> None:
         self.adminframe=Frame(page1)
@@ -60,3 +113,4 @@ class enteradminpage :
 #=========  save ===========
         self.B_save.configure(width=10,pady=7,text="Save",font=("times new roman",15),bg="dodgerblue4",fg="white",border=0)
         self.B_save.place(x=250,y=400)
+'''

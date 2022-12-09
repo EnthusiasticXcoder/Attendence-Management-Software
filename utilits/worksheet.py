@@ -6,11 +6,10 @@ import os
 from openpyxl import load_workbook
 from openpyxl.utils import get_column_letter
 
-try :from utilits import Drive_uplode
-except :pass
+from utilits import Drive_uplode
 
 
-def import_(user):
+def import_(user,Function):
     fileto=filedialog.askopenfilename(
         initialdir='D:/',
         title="Import A File",
@@ -25,6 +24,9 @@ def import_(user):
             filefr=os.path.join(fil,f"workbooks\\{user}\\{f}")
             filefr=r"{}".format(filefr)
             shutil.copyfile(fileto,filefr)
+            
+            if Drive_uplode.DStoreID!=None: Thread(target=Drive_uplode.DStoreID.Update,args=(user,)).start()
+            Thread(target=Drive_uplode.upload_files,args=(user,f,Function)).start()
             messagebox.showinfo("","File imported Sucessfully")
         except :
             messagebox.showerror("Error","Cannot Import File")
@@ -70,7 +72,7 @@ def cheackplace(ws):
             break
     return char
 
-def entertheory(backfun,object,page,user,Excel,date,time,roll_list):
+def entertheory(backfun,object,user,Excel,date,time,roll_list):
     try:
         try:
             wb=load_workbook(f"workbooks\\{user}\\{Excel}")
@@ -129,16 +131,16 @@ def entertheory(backfun,object,page,user,Excel,date,time,roll_list):
             Thread(target=Drive_uplode.upload_files , args=(user,Excel)).start()
             messagebox.showinfo("save","Entry save sucessfully")
         
-        object.extend_end(backfun,page,user,savefun,n)
+        object.extend_end(backfun,savefun,n)
         
         if char=="V":
             messagebox.showerror("","Sheet is full! Create new sheet")
     except Exception as e:
         messagebox.showerror("An Error occure",f"Entry not saved\n{e}")
-        backfun(page,user)
+        backfun()
         return
 
-def enterpract(backfun,object,page,user,Excel,date,time,roll_list):
+def enterpract(backfun,object,user,Excel,date,time,roll_list):
     try:      
         try:
             wb=load_workbook(f"workbooks\{user}\{Excel}")
@@ -201,24 +203,24 @@ def enterpract(backfun,object,page,user,Excel,date,time,roll_list):
             Thread(target=Drive_uplode.upload_files , args=(user,Excel)).start()
             messagebox.showinfo("save","Entry save sucessfully")
         
-        object.extend_end(backfun,page,user,savefun,n)
+        object.extend_end(backfun,savefun,n)
         
         if char=="AE":
             messagebox.showerror("","Sheet is full! Create new sheet")
     except:
         messagebox.showerror("An Error occure","Entry not saved")
-        backfun(page,user)
+        backfun()
         return
 
-def select(backfun,object,page,user,sheet,date,time,roll_list,tp):
+def select(backfun,object,user,sheet,date,time,roll_list,tp):
     roll_list=roll_list[:-1:]
-    if time == "" or time == " " :
+    if time == "" or time == " " or time=="Time" :
         messagebox.showerror("Error","All Fields Are Required")
         return
     if tp == "Theory":
-        entertheory(backfun,object,page,user,sheet,date,time,roll_list)
+        entertheory(backfun,object,user,sheet,date,time,roll_list)
     elif tp=="Practicle":
-        enterpract(backfun,object,page,user,sheet,date,time,roll_list)
+        enterpract(backfun,object,user,sheet,date,time,roll_list)
     else:
         messagebox.showerror("Error","Invalid choice")
 

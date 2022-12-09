@@ -1,7 +1,53 @@
-from tkinter import *
+import tkinter as tk
+import customtkinter as ctk
 
 
-class deletepage():
+class deleteFrame(ctk.CTkFrame):
+    def __init__(self, *args, 
+                 bg_color=None, 
+                 fg_color="default_theme", 
+                 border_color="default_theme", 
+                 border_width="default_theme", 
+                 corner_radius="default_theme", 
+                 width=200, height=200, 
+                 overwrite_preferred_drawing_method: str = None, 
+                 **kwargs):
+
+        super().__init__(*args, bg_color=bg_color, 
+                         fg_color=fg_color, 
+                         border_color=border_color, 
+                         border_width=border_width, 
+                         corner_radius=corner_radius,
+                         width=width, height=height, 
+                         overwrite_preferred_drawing_method=overwrite_preferred_drawing_method,
+                         **kwargs)
+        
+        label = ctk.CTkLabel( master=self,
+                              text="Delete Account",
+                              text_font=("times new roman",15))
+        label.grid(row=0, column=0, pady=10, sticky="w")
+
+        self.EnterUserName = ctk.CTkEntry(master=self,
+                                          width=120,
+                                          placeholder_text="Enter UserName" )
+        self.EnterUserName.grid(row=1, column=0, columnspan=2, pady=10, padx=20, sticky="we")
+
+        self.ConfirmButton = ctk.CTkButton(master=self,
+                                      text="Confirm")
+        self.ConfirmButton.grid(row=3, column=1, pady=30, padx=20)
+
+
+if __name__=='__main__':
+    r=ctk.CTk()
+    deleteFrame(master=r).pack()
+    r.mainloop()
+
+
+
+
+
+
+'''class deletepage:
     def __init__(self,page1) -> None:
         self.sineup=Frame(page1)
         self.e_user=Entry(self.sineup)
@@ -31,3 +77,4 @@ class deletepage():
         self.B_del.configure(width=10,pady=7,text="Confirm",font=("times new roman",15),bg="dodgerblue4",fg="white",border=0)
         self.B_del.place(x=250,y=250)
 
+'''
