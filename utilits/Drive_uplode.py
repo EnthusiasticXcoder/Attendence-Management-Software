@@ -25,7 +25,7 @@ def Define(folder):
 
 def get_folderid(foldername):
     try:
-        folder="Enter folder name"
+        folder="1IZzpZ-uXQP1Fu4_A2fU4-fi2-hGqMCQg"
         folder_list = drive.ListFile({'q' : f"'{folder}' in parents and trashed=false"}).GetList()
 
         for gfolder in folder_list:
@@ -52,7 +52,7 @@ def get_files(folder):
 
 def dfolder(foldername):
     try:
-        folder="enter folder name"
+        folder="1IZzpZ-uXQP1Fu4_A2fU4-fi2-hGqMCQg"
         folder_list = drive.ListFile({'q' : f"'{folder}' in parents and trashed=false"}).GetList()
         for gfolder in folder_list:
             if gfolder['title'] == foldername:
