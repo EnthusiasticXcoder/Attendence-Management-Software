@@ -19,7 +19,7 @@ from utilits import worksheet
 from utilits import Drive_uplode 
 from utilits import deleteentry
 
- 
+
 list=os.listdir(os.getcwd()+"\\workbooks")
 if list :
     for i in list:
@@ -99,7 +99,7 @@ def EnterAttend(Frame):
     Frame.columnconfigure(0, weight=1)
     
     def Function():
-        Scroll=ScrollFrame.ScrollFrame(master=Frame)
+        Scroll=ScrollFrame.ScrollFrame(master=Frame,binding_root=root)
         Scroll.grid(row=0,column=0,sticky='nsew')
 
         Scroll.Frame.rowconfigure((0,2), weight=1)
@@ -115,7 +115,7 @@ def EnterAttend(Frame):
                                                             sheet=theory.WbEntry.get(),
                                                             date=theory.DateEntry.get_date(),
                                                             time=theory.TimeEntry.get(),
-                                                            roll_list=theory.RollList.textbox.get("1.0",END),
+                                                            roll_list=theory.RollList.get("1.0",END),
                                                             tp=theory.SelectTorP.get()
                                                             ))   
     Function()
@@ -142,6 +142,10 @@ def adminconfig(Frame):
 
     '''   Toggel Buttons Command Defination -----------------------------
     -------------------------------------------------------------------- '''
+
+    root.bind('<Control-plus>',root.increment_scaling_event)
+    root.bind('<Control-minus>',root.decrement_scaling_event)
+
     Frame.ToggelFrame.NewSheetButton.configure(command=lambda:CreateSheet(Frame.MainFrame))
     
     try : Frame.ToggelFrame.ImportWbButton.configure(command=lambda:worksheet.import_(stor.admin_name,Frame))
@@ -223,3 +227,4 @@ if not root.logout and stor != None :
     Thread(target=upload,args=(stor.admin_name,)).start()
 
 #1,2,3,5,6,8,13,24,15,19,26,30,31,32,33,34,38,39,41,43,51,65,55,58,69,135
+
