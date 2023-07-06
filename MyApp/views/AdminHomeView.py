@@ -70,13 +70,59 @@ class AdminHomeView(ctk.CTkFrame):
         self.ToggelMenu = ToggelMenuWidget(master=BottomFrame)
         self.ToggelMenu.grid(row=0, column=0, sticky="nswe")
 
-        self.ToggelMenu.addButton('assets/icons/eye.png','test')
-        
+        # adding Buttons to Toggel Menu Widget
+        for ButtonData in ADMIN_BUTTONS:
+            self.ToggelMenu.addButton(imagepath=ButtonData[ICONPATH],text=ButtonData[TEXT])
+
         # Main Frame Widget for Activities
         self.MainFrame = ctk.CTkFrame(master=BottomFrame)
         self.MainFrame.grid(row=0, column=1, sticky="nswe")
         
 
+ICONPATH = 'IconPath'
+TEXT = 'text'
+
+ADMIN_BUTTONS = [
+    {
+        ICONPATH : 'assets/icons/home.png',
+        TEXT : 'Home'
+    },
+    {
+        ICONPATH : 'assets/icons/file-plus.png',
+        TEXT : 'Create New Sheet'
+    },
+    {
+        ICONPATH : 'assets/icons/arrow-down-circle.png',
+        TEXT : 'Import Workbook'
+    },
+    {
+        ICONPATH : 'assets/icons/edit.png',
+        TEXT : 'Enter Attendence'
+    },
+    {
+        ICONPATH : 'assets/icons/file-text.png',
+        TEXT : 'Download Excel'
+    },
+    {
+        ICONPATH : 'assets/icons/user-plus.png',
+        TEXT : 'Create New Admin'
+    },
+    {
+        ICONPATH : 'assets/icons/users.png',
+        TEXT : 'Create New User'
+    },
+    {
+        ICONPATH : 'assets/icons/change.webp',
+        TEXT : 'Change Password'
+    },{
+        ICONPATH : 'assets/icons/delete.png',
+        TEXT : 'Delete Entry'
+    },
+    {
+        ICONPATH : 'assets/icons/log-out.png',
+        TEXT : 'Log Out'
+    },
+]
 if __name__=='__main__':
     r=ctk.CTk()
     r.rowconfigure(0,weight=1)
