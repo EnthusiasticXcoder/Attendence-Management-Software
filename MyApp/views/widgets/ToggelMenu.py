@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import Tuple , Callable
 import tkinter as tk
 import customtkinter as ctk
 from PIL import Image,ImageTk
@@ -52,9 +52,15 @@ class ToggelMenuWidget(ctk.CTkFrame):
         self.ModeSwitch = ctk.CTkSwitch(master=self,text="",command= lambda :self.change_mode(self.ModeSwitch),width=0)
         self.ModeSwitch.grid(row=15, column=0,sticky='e',columnspan=3,padx=20)
     
-    def addButton(self,imagepath,text):
+    def addButton(self,imagepath: str,text: str , command: Callable = lambda : print('Default') ):
         row=ToggelMenuWidget._Buttonarray.__len__()
-        button =ctk.CTkButton(master=self,text="",image=self.loadImage(imagepath,30),width=30,compound='right',fg_color='transparent')
+        button =ctk.CTkButton(master=self,text="",
+                              image=self.loadImage(imagepath,30),
+                              width=30,
+                              compound='right',
+                              fg_color='transparent',
+                              command= command,
+                              )
         button.grid(row=row+2,column=0,padx=20,pady=3)
         ToggelMenuWidget._Buttonarray.append([button,text,self.loadImage(imagepath,30)])
         return button
