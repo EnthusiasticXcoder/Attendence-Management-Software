@@ -1,10 +1,11 @@
 from typing import Tuple
-import tkinter as tk
 import customtkinter as ctk
 
-from widgets.Toggel_Menu_Widget import ToggelMenuWidget
+import HomeView
+import widgets
 
-class AdminHomeView(ctk.CTkFrame):
+
+class AdminHomeView(HomeView._HomeView):
     def __init__(self, master: any, 
                  width: int = 200, 
                  height: int = 200, 
@@ -25,104 +26,46 @@ class AdminHomeView(ctk.CTkFrame):
                          border_color, 
                          background_corner_colors, 
                          overwrite_preferred_drawing_method, **kwargs)
-        # Home View For Admin Level Login 
-        #configuring widget Grid
-        self.grid_columnconfigure(0,weight=1)
+        # Main Frame Widget for Activities
+        # initialising widgets for button actions
+        CreateSheet = widgets.CreateSheet.CreateSheetWidget(master=self.BottomFrame)
+        CreateSheet.grid(row=0, column=1, sticky="nswe")
 
-        # Head Frame To Display Logo and name
-        HeadWidget = ctk.CTkFrame(master=self,fg_color=fg_color,corner_radius=0)
-        HeadWidget.grid(row=0,column=0,sticky='ew')
+        EnterAttendence = widgets.EnterAttendence.EnterAttendenceWidget(master=self.BottomFrame)
+        EnterAttendence.grid(row=0, column=1, sticky="nswe")
         
-        HeadWidget.grid_columnconfigure(0, weight=1)
-        HeadWidget.grid_columnconfigure(0, weight=1)
+        CreateNewAdmin = widgets.CreateNewUser.CreateNewUserWidget(master=self.BottomFrame,text=CREATENEWADMIN)
+        CreateNewAdmin.grid(row=0, column=1, sticky="nswe")
 
-        # Logo Image OF The Institute
-        self.img= tk.PhotoImage(file='assets/images/logoies.png') 
-        label=tk.Label(HeadWidget,image=self.img,bg=fg_color)
-        label.grid(row=0,column=0,sticky='nw')
-        
-        # Username Widget
-        Frame=ctk.CTkFrame(master=HeadWidget,fg_color=fg_color)
-        Frame.grid(row=0,column=0,sticky='e')
-        
-        NameFrame=ctk.CTkFrame(master=Frame,fg_color=fg_color)
-        NameFrame.pack(side=tk.RIGHT,padx=20,ipadx=50)
-        ctk.CTkLabel(master=NameFrame,
-                     text="Login as : ",
-                     text_color='black',
-                     font=('Goudy old style',18,"bold"),
-                     anchor='w',
-                    ).grid(row=0,column=0,sticky='w')
-        ctk.CTkLabel(master=NameFrame,
-                     text='Username',
-                     font=('Goudy old style',25,"bold"),
-                     text_color='red',
-                     ).grid(row=1,column=0,sticky='w')
+        CreateNewUser = widgets.CreateNewUser.CreateNewUserWidget(master=self.BottomFrame,text=CREATENEWUSER)
+        CreateNewUser.grid(row=0, column=1, sticky="nswe")
 
-        # Main Frame To Display Function Widgets
-        BottomFrame = ctk.CTkFrame(master=self,fg_color=fg_color,corner_radius=0)
-        BottomFrame.place(x=0,rely=0.15,relheight=0.85,relwidth=1)
+        ChangePassword = widgets.ChangePassword.ChangePasswordWidget(master=self.BottomFrame)
+        ChangePassword.grid(row=0, column=1, sticky="nswe")
 
-        BottomFrame.grid_columnconfigure(1, weight=1)
-        BottomFrame.grid_rowconfigure(0, weight=1)
+        DeleteUser = widgets.DeleteUser.DeleteUserWidget(master=self.BottomFrame)
+        DeleteUser.grid(row=0, column=1, sticky="nswe")
 
-        # Toggel Menu Widget 
-        self.ToggelMenu = ToggelMenuWidget(master=BottomFrame)
-        self.ToggelMenu.grid(row=0, column=0, sticky="nswe")
+        Home = ctk.CTkFrame(master=self.BottomFrame)
+        Home.grid(row=0, column=1, sticky="nswe")
 
         # adding Buttons to Toggel Menu Widget
-        for ButtonData in ADMIN_BUTTONS:
-            self.ToggelMenu.addButton(imagepath=ButtonData[ICONPATH],text=ButtonData[TEXT])
+        self.ToggelMenu.addButton(imagepath='assets/icons/home.png',text='Home',command= Home.tkraise )
+        self.ToggelMenu.addButton(imagepath='assets/icons/file-plus.png',text='Create New Sheet',command= CreateSheet.tkraise)
+        self.ToggelMenu.addButton(imagepath='assets/icons/arrow-down-circle.png',text='Import Workbook')
+        self.ToggelMenu.addButton(imagepath='assets/icons/edit.png',text='Enter Attendence',command= EnterAttendence.tkraise)
+        self.ToggelMenu.addButton(imagepath='assets/icons/file-text.png',text='Download Excel')
+        self.ToggelMenu.addButton(imagepath='assets/icons/user-plus.png',text='Create New Admin',command=CreateNewAdmin.tkraise)
+        self.ToggelMenu.addButton(imagepath='assets/icons/users.png',text='Create New User',command=CreateNewUser.tkraise)
+        self.ToggelMenu.addButton(imagepath='assets/icons/change.webp',text='Change Password',command=ChangePassword.tkraise)
+        self.ToggelMenu.addButton(imagepath='assets/icons/delete.png',text='Delete Entry',command= DeleteUser.tkraise)
+        self.ToggelMenu.addButton(imagepath='assets/icons/log-out.png',text='Log Out',command= self.destroy)
 
-        # Main Frame Widget for Activities
-        self.MainFrame = ctk.CTkFrame(master=BottomFrame)
-        self.MainFrame.grid(row=0, column=1, sticky="nswe")
-        
 
-ICONPATH = 'IconPath'
-TEXT = 'text'
+CREATENEWADMIN ='Create New Admin'
+CREATENEWUSER = 'Create New User' 
 
-ADMIN_BUTTONS = [
-    {
-        ICONPATH : 'assets/icons/home.png',
-        TEXT : 'Home'
-    },
-    {
-        ICONPATH : 'assets/icons/file-plus.png',
-        TEXT : 'Create New Sheet'
-    },
-    {
-        ICONPATH : 'assets/icons/arrow-down-circle.png',
-        TEXT : 'Import Workbook'
-    },
-    {
-        ICONPATH : 'assets/icons/edit.png',
-        TEXT : 'Enter Attendence'
-    },
-    {
-        ICONPATH : 'assets/icons/file-text.png',
-        TEXT : 'Download Excel'
-    },
-    {
-        ICONPATH : 'assets/icons/user-plus.png',
-        TEXT : 'Create New Admin'
-    },
-    {
-        ICONPATH : 'assets/icons/users.png',
-        TEXT : 'Create New User'
-    },
-    {
-        ICONPATH : 'assets/icons/change.webp',
-        TEXT : 'Change Password'
-    },{
-        ICONPATH : 'assets/icons/delete.png',
-        TEXT : 'Delete Entry'
-    },
-    {
-        ICONPATH : 'assets/icons/log-out.png',
-        TEXT : 'Log Out'
-    },
-]
+
 if __name__=='__main__':
     r=ctk.CTk()
     r.rowconfigure(0,weight=1)
