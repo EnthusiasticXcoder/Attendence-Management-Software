@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import Callable, Tuple
 from PIL import Image
 import customtkinter as ctk
 
@@ -24,7 +24,9 @@ class LoginView(ctk.CTkFrame):
                          border_color, 
                          background_corner_colors, 
                          overwrite_preferred_drawing_method, **kwargs)
-        # Login View Widget a View To Enter Login Creds...  
+        # Login View Widget a View To Enter Login Creds... 
+
+        # Configure grid
         self.grid_rowconfigure(0,weight=1)
         self.grid_columnconfigure(0,weight=1)
 
@@ -52,13 +54,13 @@ class LoginView(ctk.CTkFrame):
 
         # TextEntry Field to enter text - USERNAME
         self.UserName = ctk.CTkEntry(master=LoginFrame,width=300,
-                                  placeholder_text="UserName")
+                                  placeholder_text="UserName",)
         self.UserName.grid(row=2, column=0, columnspan=3, padx=20, sticky="we")
 
         # TextEntry Field to enter text - PASSWORD
         self.Password = ctk.CTkEntry(master=LoginFrame,
                                   placeholder_text="Password",
-                                  show='*')
+                                  show='*',)
         self.Password.grid(row=4, column=0, columnspan=3, padx=20, sticky="we")
 
         # EyeIcon On the left side of password to view entered Password
@@ -92,5 +94,18 @@ class LoginView(ctk.CTkFrame):
                                         hover_color=('#13801B','#13801B'),
                                         border_width=2,
                                         border_color='black',
-                                         command= lambda : print('Login Button') ) # =================+++++++ Login Button ++++++++===================
+                                         command= lambda : print('LoginButton')) # =================+++++++ Login Button ++++++++===================
         self.LoginButton.grid(row=7, column=0,columnspan=3, pady=20, padx=20, sticky="n")
+    
+    def getUsername(self):
+        return self.UserName.get()
+    
+    def getPassword(self):
+        return self.Password.get()
+    
+    def SetLoginFunction(self , command: Callable):
+        self.LoginButton.configure(command = lambda: command(self.getUsername(), self.getPassword()))
+    
+    def SetForgotPasswordFunction(self, command: Callable):
+        self.ForgotButton.configure(command = lambda: command())
+
