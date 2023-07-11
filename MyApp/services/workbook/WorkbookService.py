@@ -5,10 +5,15 @@ import shutil
 from openpyxl import load_workbook , Workbook
 from openpyxl.utils import get_column_letter
 
-from services.workbook.workbookexceptions import (CreateNewWorksheetException, 
-                                                InstanceAlreadyCreatedException, 
-                                                UnableToCreateWorksheetException, 
-                                                UnableToGetWorksheetException)
+
+class InstanceAlreadyCreatedException(Exception) :
+    ''' Exception when someone directly calls the initialiser'''
+class CreateNewWorksheetException(Exception) :
+    ''' Exception raised when there is only one worksheet of current worksheet is full'''
+class UnableToGetWorksheetException(Exception):
+    ''' Exception raised when unable to find sheetdata.csv file or some exception in getting sheet'''
+class UnableToCreateWorksheetException(Exception):
+    ''' Exception raised when unable to find sheetdata.csv file or some exception in creating sheet'''
 
 WORKBOOKPATH = 'WorkbookPath'
 WORKSHEET = 'Worksheet'
@@ -18,19 +23,19 @@ class WorkBookService :
 
     @staticmethod
     def getInstance():
-        if WorkBookService.__instance == None :
+        if WorkBookService.__instance is None :
             WorkBookService()
         return WorkBookService.__instance
     
     def __init__(self) -> None:
-        if WorkBookService.__instance != None:
+        if WorkBookService.__instance is not None:
             raise InstanceAlreadyCreatedException
         WorkBookService.__instance = self
     
-    def addWorkbook(self, dirpath: str , filesrc: str):
+    def addWorkbook(self, dirname: str , filesrc: str):
         ''' A Method to Add Excel Workbook File To the application '''
-        filename=filesrc.split("/")[-1]
-        filedst =os.path.join(os.getcwd(), dirpath , filename)
+        filename=os.path.basename(filesrc)
+        filedst =os.path.join(os.getcwd(), dirname , filename)
         shutil.copyfile(filesrc, filedst)   
     
     def CreateNewWorksheet(self, wbPath: str, title: str):
@@ -61,8 +66,7 @@ class WorkBookService :
         except Exception :
             raise UnableToCreateWorksheetException
 
-
-    def EnterAttendence(self, CSVRollno: str, DateTime: str, isTheory: str, wbPath: str  ):
+    def EnterAttendence(self, CSVRollno: str, DateTime: str, isTheory: bool, wbPath: str  ):
         ''' A Method to Enter Attendence in the worksheet '''
         try : 
             workbook = load_workbook(filename= wbPath)
@@ -80,21 +84,24 @@ class WorkBookService :
         worksheet[f'{letter}9'].value = DateTime
 
         EnrollmentList=[]
-        for column in range(10,numberofentry+11):
+        for column in range(10,numberofentry+10):
             EnrollmentList.append(str(worksheet[f'B{column}'].value))
         
         Roll_list=[number.zfill(3).capitalize() for rollno in CSVRollno.split(",") for number in str(rollno).strip().split()]
-    
-        for column,roll in enumerate(Roll_list) :    
-            for cheack in EnrollmentList:
+
+        temp = []
+        for column,roll in enumerate(EnrollmentList) :    
+            for cheack in Roll_list:
                 if roll.endswith(cheack):
-                    worksheet[f'{letter}{column}'] = 'P'
+                    worksheet[f'{letter}{column+10}'] = 'P'
+                    temp.append('P')
                     Roll_list.remove(cheack)
                     break
             else :
-                worksheet[f'{letter}{column}'] = 'A'
-
-        workbook.save(wbPath)
+                worksheet[f'{letter}{column+10}'] = 'A'
+                temp.append('A')
+        
+        return EnrollmentList,worksheet[f'C10:C{numberofentry+10}'], temp, lambda: workbook.save(wbPath)
         
     def _getCharacter(self, worksheet , isTheory):
         if isTheory :
@@ -137,3 +144,4 @@ class WorkBookService :
                         return worksheet
         except Exception :
             raise UnableToGetWorksheetException
+
