@@ -102,10 +102,6 @@ class ToggelMenuWidget(ctk.CTkFrame):
                             dark_image=Image.open(path),
                             size=(size,size)) 
 
-
-if __name__=='__main__':
-    r=ctk.CTk(fg_color='blue')
-    r.rowconfigure(0,weight=1)
-    r.columnconfigure(0,weight=0)
-    ToggelMenuWidget(master=r).grid(row=0,column=0,sticky='nsew')
-    r.mainloop()
+    def destroy(self):
+        ToggelMenuWidget._Buttonarray = []
+        return super().destroy()
