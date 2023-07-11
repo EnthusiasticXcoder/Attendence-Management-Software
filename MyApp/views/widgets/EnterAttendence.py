@@ -1,5 +1,13 @@
+import os
+from tkinter import messagebox
 from typing import Tuple
 import customtkinter as ctk
+
+from helpers.CTkCalender import CTkDateEntry
+from views.widgets.AttendenceListView import AttendenceListTile
+
+from services.cloud.DriveService import DriveService, TITLE
+from services.workbook.WorkbookService import WorkBookService, CreateNewWorksheetException
 
 
 class EnterAttendenceWidget(ctk.CTkFrame):
@@ -33,42 +41,95 @@ class EnterAttendenceWidget(ctk.CTkFrame):
         ScrollFrame.grid(row=0,column=0,sticky='nsew')
 
         ScrollFrame.grid_rowconfigure(0,weight=1)
-        ScrollFrame.columnconfigure(0,weight=1)
+        ScrollFrame.grid_columnconfigure(0,weight=1)
 
         # Frame for contaning the widgets
-        Frame = ctk.CTkFrame(master=ScrollFrame)
-        Frame.grid(row=0,column=0,sticky='')
+        self.MainFrame = ctk.CTkFrame(master=ScrollFrame)
+        self.MainFrame.grid(row=0,column=0,sticky='')
 
-        Frame.grid_columnconfigure((0,2,4), weight=1,minsize=30)
-        Frame.grid_rowconfigure((0,2,4), minsize=30)    
-        Frame.grid_rowconfigure(9, minsize=40)   
-        Frame.grid_rowconfigure(11, minsize=40)
+        self.MainFrame.grid_columnconfigure((0,2,4), weight=1,minsize=30)
+        self.MainFrame.grid_rowconfigure((0,2,4), minsize=30)    
+        self.MainFrame.grid_rowconfigure(9, minsize=40)   
+        self.MainFrame.grid_rowconfigure(11, minsize=40)
+        # get values
+        service = DriveService.getInstance()
+        values = service.getWBNames()
         # Workbook Entry Widget
-        self.WbEntry = ctk.CTkOptionMenu(master=Frame,values=['T1','T2','T3'])
+        self.WbEntry = ctk.CTkOptionMenu(master=self.MainFrame,values=values)
         self.WbEntry.grid(row=1, column=1,pady=20, sticky="w")
         self.WbEntry.set('Select Class')
+
         # Select Theory or Practicle Widget
-        self.SelectTorP = ctk.CTkOptionMenu(master=Frame,values=['Theory','Practicle'])
+        self.SelectTorP = ctk.CTkOptionMenu(master=self.MainFrame,values=['Theory','Practicle'])
         self.SelectTorP.grid(row=1, column=3,pady=20, sticky="w")
+
         # Date Picker Widget For entering Dates
-        self.DateEntry = ctk.CTkEntry(master=Frame,width=15)
+        self.DateEntry = CTkDateEntry(master=self.MainFrame)
         self.DateEntry.grid(row=3, column=1,pady=20, sticky="w",padx=4)
+
         # Time Selection widget for selecting sessons
         val=("9:45-10:35","10:35-11:25","11:30-12:20","12:20-1:10","1:40-2:30","2:30-3:20","3:20-4:05","4:05-4:50")
-        self.TimeEntry = ctk.CTkComboBox(master=Frame,values=val)
+        self.TimeEntry = ctk.CTkComboBox(master=self.MainFrame,values=val)
         self.TimeEntry.grid(row=3, column=3,pady=20, sticky="w")
         self.TimeEntry.set('Time')
-        # Lable For Entering Roll ni=umbers
-        label = ctk.CTkLabel( master=Frame,
+
+        # Lable For Entering Roll numbers
+        label = ctk.CTkLabel( master=self.MainFrame,
                               text="Enter RollNo :",
                               font=("Roboto Medium", -16))
         label.grid(row=5, column=0, sticky="w",padx=20)
+
         #Text Box For taking rollNumbet Input
-        self.RollList = ctk.CTkTextbox( Frame,width=700,
+        self.RollList = ctk.CTkTextbox( self.MainFrame,width=700,
                                         font=("Roboto Medium", -30,'bold'),
                                         fg_color='white',
                                         text_color="black")
         self.RollList.grid(row=6, column=0,rowspan=3,columnspan=4,padx=30)
+
         # Confirm Button 
-        self.ConfirmButton = ctk.CTkButton( master=Frame,text="Confirm" )
+        self.ConfirmButton = ctk.CTkButton( master=self.MainFrame,text="Confirm",
+                                           command= self._OnConfirm )
         self.ConfirmButton.grid(row=10, column=3)
+
+    def getWorkbook(self):
+        return self.WbEntry.get()
+    
+    def isTheory(self):
+        return True if self.SelectTorP.get() == 'Theory' else False
+    
+    def getDateTime(self):
+        date = self.DateEntry.get_date().strftime('%d-%m-%Y')
+        time = self.TimeEntry.get()
+        return f'{date}\n{time}'
+    
+    def getRoll(self):
+        return self.RollList.get('1.0',ctk.END)
+
+    def _OnConfirm(self):
+        ''' Function To be Called on Press Of Confirm Button'''
+        workbook = self.getWorkbook()
+        isTheory = self.isTheory()
+        DateTime =self.getDateTime()
+        CSVRollno = self.getRoll()
+
+        service = DriveService.getInstance()
+        service.Download_File(workbook)
+
+        wbpath = os.path.join(service.FOLDER.get(TITLE),workbook)
+        
+        try:
+            service = WorkBookService.getInstance()
+            enrollment, names, status, command = service.EnterAttendence(wbPath=wbpath, 
+                                        isTheory=isTheory, 
+                                        DateTime=DateTime, 
+                                        CSVRollno=CSVRollno)
+        except CreateNewWorksheetException :
+            messagebox.showerror('Create New Sheet')
+        except Exception :
+            messagebox.showerror('Unable To Enter Attendence')
+            
+        AttendenceListTile.Builder(master=self.MainFrame, status=status, enrollment=enrollment, names=names,command=command, workbook=workbook)
+
+
+
+        
