@@ -2,10 +2,14 @@ from typing import Tuple
 import tkinter as tk
 import customtkinter as ctk
 
-import widgets
+try :
+    import views.widgets.ToggelMenu as ToggelMenu
+except ModuleNotFoundError :
+    import widgets.ToggelMenu as ToggelMenu
 
 class _HomeView(ctk.CTkFrame):
     def __init__(self, master: any, 
+                 Username: str,
                  width: int = 200, 
                  height: int = 200, 
                  corner_radius: int | str | None = None, 
@@ -54,11 +58,11 @@ class _HomeView(ctk.CTkFrame):
                      anchor='w',
                     ).grid(row=0,column=0,sticky='w')
         ctk.CTkLabel(master=NameFrame,
-                     text='Username',
+                     text= Username,
                      font=('Goudy old style',25,"bold"),
                      text_color='red',
                      ).grid(row=1,column=0,sticky='w')
-
+        
         # Main Frame To Display Function Widgets
         self.BottomFrame = ctk.CTkFrame(master=self,fg_color=fg_color,corner_radius=0)
         self.BottomFrame.place(x=0,rely=0.15,relheight=0.85,relwidth=1)
@@ -67,5 +71,5 @@ class _HomeView(ctk.CTkFrame):
         self.BottomFrame.grid_rowconfigure(0, weight=1)
 
         # Toggel Menu Widget 
-        self.ToggelMenu = widgets.ToggelMenu.ToggelMenuWidget(master=self.BottomFrame)
+        self.ToggelMenu = ToggelMenu.ToggelMenuWidget(master=self.BottomFrame)
         self.ToggelMenu.grid(row=0, column=0, sticky="nswe")
