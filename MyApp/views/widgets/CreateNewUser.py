@@ -1,6 +1,13 @@
 from typing import Tuple
 import customtkinter as ctk
+from tkinter import messagebox
 
+from services.login.LoginService import LoginService
+from services.cloud.DriveService import DriveService
+
+
+CREATENEWADMIN ='Create New Admin'
+CREATENEWUSER = 'Create New User' 
 
 class CreateNewUserWidget(ctk.CTkFrame):
     def __init__(self, master: any, 
@@ -53,5 +60,42 @@ class CreateNewUserWidget(ctk.CTkFrame):
         self.ConfirmPassword.grid(row=3, column=0, columnspan=2, pady=7, padx=20, sticky="we")
         # Save Button for saving the user
         self.SaveButton = ctk.CTkButton(master=Frame,
-                                      text="Save" )
+                                      text="Save",
+                                       command= lambda: self._OnSave(text) )
         self.SaveButton.grid(row=4, column=1, pady=20, padx=20)
+
+    def getUsername(self):
+        return self.EnterUserName.get()
+    
+    def getPassword(self):
+        return self.EnterPassword.get()
+    
+    def getConfirmPassword(self):
+        return self.ConfirmPassword.get()
+    
+    def _OnSave(self, Level: str):
+        ''' Function To Execute When save Button Is Pressed '''
+        Username =self.getUsername()
+        Password = self.getPassword()
+        ConfirmPassword = self.getConfirmPassword()
+
+        if Username.strip() == '' or Password.strip() == '' or ConfirmPassword.strip() == '':
+            return messagebox.showerror('All Fields Are Required')
+
+        if Password != ConfirmPassword :
+            return messagebox.showerror('New Password And Confirm New Password Are Not Same')
+        
+        try :
+            service = LoginService.getInstance()
+            if service.CheackUserName(Username):
+                if Level == CREATENEWADMIN :
+                    service.CreateLogin(UserName=Username, Password=Password, isadmin= True)
+                elif Level == CREATENEWUSER :
+                    service.CreateLogin(UserName=Username, Password=Password)
+                service = DriveService.getInstance()
+                service.Upload_logindata()
+                messagebox.showinfo('New Login Credentials Entered Successfully')
+            else : 
+                return messagebox.showerror('Username Exists Try Another Username')
+        except Exception :
+            return messagebox.showerror('Unable To Create New User')

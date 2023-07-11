@@ -1,5 +1,10 @@
 from typing import Tuple
 import customtkinter as ctk
+from tkinter import messagebox
+
+from services.login.LoginService import LoginService
+from services.login.LoginService import IncorrectPasswordException
+from services.cloud.DriveService import DriveService
 
 
 class ChangePasswordWidget(ctk.CTkFrame):
@@ -54,7 +59,44 @@ class ChangePasswordWidget(ctk.CTkFrame):
         # Save Button
         self.SaveButton = ctk.CTkButton(master=Frame,
                                         text="Save",
-                                        border_width=2 )
+                                        border_width=2,
+                                         command= self._OnSave )
         self.SaveButton.grid(row=4, column=1, columnspan=1, pady=20, padx=20, sticky="we")
+    
+    def getOldPassword(self):
+        return self.OldPass.get()
+    
+    def getNewPassword(self):
+        return self.OldPass.get()
+    
+    def getConfirmNewPassword(self):
+        return self.OldPass.get()
+    
+    def _OnSave(self):
+        ''' Function To Execute When Save Button Is Pressed '''
+        OldPassword = self.getOldPassword()
+        NewPassword = self.getNewPassword()
+        ConfirmPassword = self.getConfirmNewPassword()
+
+        if OldPassword.strip() == '' or NewPassword.strip() == '' or ConfirmPassword.strip() == '':
+            return messagebox.showerror('All Fields Are Required')
+
+        if OldPassword == NewPassword :
+            return messagebox.showerror('Old Password And New Password Must Be Different')
+            
+        if NewPassword != ConfirmPassword :
+            return messagebox.showerror('New Password And Confirm New Password Are Not Same')
+        
+        try :
+            service = LoginService.getInstance()
+            service.ChangePassword(OldPassword=OldPassword, NewPassword=NewPassword)
+            service = DriveService.getInstance()
+            service.Upload_logindata()
+            messagebox.showinfo('Password Changed Successfully')
+        except IncorrectPasswordException :
+            return messagebox.showerror('Incorrect Password')
+        except Exception :
+            return messagebox.showerror('Unable To Change Password')
+        
 
         

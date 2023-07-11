@@ -1,5 +1,10 @@
 from typing import Tuple
 import customtkinter as ctk
+from tkinter import messagebox
+
+from services.login.LoginService import LoginService
+from services.login.LoginService import CannotDeleteCurrentLoginUserException, UnableToDeleteException
+from services.cloud.DriveService import DriveService
 
 
 class DeleteUserWidget(ctk.CTkFrame):
@@ -42,5 +47,29 @@ class DeleteUserWidget(ctk.CTkFrame):
         self.EnterUserName.grid(row=1, column=0, columnspan=2, pady=10, padx=20, sticky="we")
         # Confirm Button
         self.ConfirmButton = ctk.CTkButton(master=Frame,
-                                      text="Confirm")
+                                      text="Confirm",
+                                      command= self._OnConfirm)
         self.ConfirmButton.grid(row=3, column=1, pady=30, padx=20)
+
+    def getUsername(self):
+        return self.EnterUserName.get()
+
+    def _OnConfirm(self):
+        ''' Function When Confirm Button Is Pressed'''
+        Username = self.getUsername()
+
+        if Username.strip() == '':
+            return messagebox.showerror('All Fields Are Required')
+
+        try :
+            service = LoginService.getInstance()
+            service.DeleteUser(UserName=Username) 
+            service = DriveService.getInstance()
+            service.Upload_logindata()
+            messagebox.showinfo(f'Username: {Username} Deleted Sucessfully')
+        except CannotDeleteCurrentLoginUserException :
+            return messagebox.showerror('Cannot Delete Current Login User')
+        except UnableToDeleteException :
+            return messagebox.showerror('Unable To Delete User')
+        except Exception :
+            return messagebox.showerror('Unable To Delete User')
