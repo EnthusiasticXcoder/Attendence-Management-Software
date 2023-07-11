@@ -1,6 +1,21 @@
-import widgets.ToggelMenu as ToggelMenu
-import widgets.CreateSheet as CreateSheet
-import widgets.CreateNewUser as CreateNewUser
-import widgets.EnterAttendence as EnterAttendence
-import widgets.DeleteUser as DeleteUser
-import widgets.ChangePassword as ChangePassword
+
+try :
+    from views.widgets import (
+        ToggelMenu as ToggelMenu,
+        CreateSheet as CreateSheet,
+        CreateNewUser as CreateNewUser,
+        EnterAttendence as EnterAttendence,
+        DeleteUser as DeleteUser,
+        ChangePassword as ChangePassword,
+        AttendenceListView as AttendenceListView,
+        DownloadListView as DownloadListView,)
+except ModuleNotFoundError :
+    from widgets import (
+        ToggelMenu as ToggelMenu,
+        CreateSheet as CreateSheet,
+        CreateNewUser as CreateNewUser,
+        EnterAttendence as EnterAttendence,
+        DeleteUser as DeleteUser,
+        ChangePassword as ChangePassword,
+        AttendenceListView as AttendenceListView,
+        DownloadListView as DownloadListView,)
