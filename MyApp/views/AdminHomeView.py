@@ -109,8 +109,8 @@ class AdminHomeView(HomeView._HomeView):
     def  _show_Download(self):
         self.master.bind('<Button-1>', lambda e : self._hide_Download())
         self.MenuFrame = widgets.DownloadListView.DownloadListTile.Builder(master=self)
-        self.MenuFrame.place(x=self.__getXCoords(88),y=self.__getYCoords(5))
-        self.pointerimg.place(x=self.__getXCoords(63),y=self.__getYCoords(5))
+        self.MenuFrame.place(x=self.__getXCoords(24),y=self.__getYCoords(5))
+        self.pointerimg.place(x=self.__getXCoords(0),y=self.__getYCoords(5))
         self.DownloadButton.configure(command=self._hide_Download)
     
     def _hide_Download(self):
@@ -120,7 +120,9 @@ class AdminHomeView(HomeView._HomeView):
         self.DownloadButton.configure(command=self._show_Download)
 
     def __getXCoords(self, x):
-        return (self.DownloadButton.winfo_rootx()-self.winfo_rootx()+x)/self._get_widget_scaling()
+        Xplace = self.DownloadButton.winfo_x()+x
+        return (Xplace + 67 if self.DownloadButton._text_label==None else Xplace + 162)/self._get_widget_scaling()
+
     def __getYCoords(self, y):
         return (self.DownloadButton.winfo_rooty()-self.winfo_rooty()+y)/self._get_widget_scaling()
     
