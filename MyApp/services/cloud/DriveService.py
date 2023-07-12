@@ -64,14 +64,14 @@ class DriveService :
                 Gfile.SetContentFile(filepath)
                 Gfile.Upload()
 
-    def Download_File(self, filename: str):
+    def Download_File(self, filename: str, path: str = None):
         ''' Function To Download Files From Drive'''
         for file in self.File_List :
             if file[TITLE] == filename : 
-                filepath = os.path.join(os.getcwd(), self.FOLDER.get(TITLE), file[TITLE])   
+                filepath = path if path is not None else os.path.join(os.getcwd(), self.FOLDER.get(TITLE), file[TITLE])   
                 Gfile=self.drive.CreateFile({ 'id' : file[ID] })
                 Gfile.GetContentFile(filepath)
-    
+
     def Download_all_files(self):
         for file in self.File_List : 
             filepath = os.path.join(os.getcwd(), self.FOLDER.get(TITLE), file[TITLE])   
