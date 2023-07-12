@@ -2,6 +2,8 @@ import customtkinter as ctk
 import tkinter as tk
 from PIL import Image
 
+from views.ShowExcelView import ShowExcelView
+
 from services.cloud.DriveService import DriveService, TITLE
 
 class DownloadListTile :
@@ -15,11 +17,11 @@ class DownloadListTile :
             
         else:
             for data in service.File_List :
-                DownloadListTile(master=Frame, data=data[TITLE]) 
+                DownloadListTile(master=Frame, wbName=data[TITLE]) 
         
         return Frame
 
-    def __init__(self, master: any, data: str) -> None:
+    def __init__(self, master: any, wbName: str) -> None:
         Frame = ctk.CTkFrame(master=master,corner_radius=0,fg_color='transparent')
         Frame.pack(expand=1,fill='x',padx=2,pady=2)
 
@@ -28,17 +30,18 @@ class DownloadListTile :
         self.red= self.loadPhoto("assets/icons/x red.png",20)
         
         tk.Frame(master=Frame,height=2,bg="black").grid(row=0,column=0,sticky='ew')
-        ctk.CTkLabel(master=Frame,text=data,font=("times new roman",15),anchor='w').grid(row=1,column=0,padx=20,sticky='ew')
+        ctk.CTkLabel(master=Frame,text=wbName,font=("times new roman",15),anchor='w').grid(row=1,column=0,padx=20,sticky='ew')
         tk.Frame(master=Frame,height=2,bg="black").grid(row=0,column=0,sticky='ew')
 
         ctk.CTkButton(master=Frame,text="",
                         fg_color=('#C0C2C5','#343638'),
                         image=self.green,width=20,border_width=2,
+                        command= lambda: ShowExcelView(wbName)
                         ).grid(row=1,column=1,padx=3)
         ctk.CTkButton(master=Frame,text="",
                         fg_color=('#C0C2C5','#343638'),
                         image=self.red,width=20,border_width=2,
-                        command= lambda: DriveService.getInstance().Delete_file(data)
+                        command= lambda: DriveService.getInstance().Delete_file(wbName)
                         ).grid(row=1,column=2)
     
     def loadPhoto(self,path,size):
