@@ -1,3 +1,5 @@
+from threading import Thread
+from tkinter import messagebox
 from typing import Callable
 import customtkinter as ctk
 
@@ -50,6 +52,8 @@ class AttendenceListTile :
         ''' Function on submiting the Attendence'''
         command()
         service=DriveService.getInstance()
-        service.Upload_File(workbook)
+        thread = Thread(service.Upload_File, args=(workbook))
+        thread.start()
+        messagebox.showinfo('Attendence Entered Sucessfully')
         Frame.destroy()    
 

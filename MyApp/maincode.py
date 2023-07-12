@@ -1,3 +1,4 @@
+from threading import Thread
 from typing import Tuple
 import customtkinter as ctk
 from tkinter import messagebox
@@ -24,7 +25,7 @@ class MyApp(ctk.CTk) :
 
     def __new__(cls):
         service = DriveService.getInstance()
-        service.Download_logindata()
+        Thread(target = service.Download_logindata ).start()
         return super().__new__(cls)
 
     def __init__(self, fg_color: str | Tuple[str, str] | None = None, **kwargs):
@@ -46,26 +47,26 @@ class MyApp(ctk.CTk) :
 
     def _OnLogin(self, UserName: str, Password: str):
         
-        '''if UserName.strip() == '' or Password.strip() == '' :
+        if UserName.strip() == '' or Password.strip() == '' :
             return messagebox.showerror('All Fields Required')
-        '''
+        
         try :  
             Service = LoginService.getInstance()
             LoginData = Service.TryLogin(UserName=UserName, Password=Password)
             Service = DriveService.getInstance()
             Service.setVariable(UserName)
-            Service.Download_all_files()
+            Thread(target = Service.Download_all_files ).start()
         except IncorrectPasswordException :
             return messagebox.showerror('Incorrect Password')
         except UsernameNotFoundException :
             return messagebox.showerror('Username Not Found')
-        except Exception as e :
+        except Exception :
             return messagebox.showerror('Unable To Login')
         
         if LoginData[LEVELORADMIN] == ADMIN:
             AdminHomeView(master=self,Username=UserName).grid(row=0, column=0, sticky='nsew')
         else :
-            UserHomeView(master=self).grid(row=0, column=0, sticky='nsew')
+            UserHomeView(master=self, Username=UserName).grid(row=0, column=0, sticky='nsew')
         
     def start(self):
         self.mainloop()

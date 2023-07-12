@@ -1,3 +1,5 @@
+from _typeshed import Incomplete
+from threading import Thread
 from typing import Tuple
 import customtkinter as ctk
 from tkinter import messagebox
@@ -62,6 +64,11 @@ class ChangePasswordWidget(ctk.CTkFrame):
                                         border_width=2,
                                          command= self._OnSave )
         self.SaveButton.grid(row=4, column=1, columnspan=1, pady=20, padx=20, sticky="we")
+    def tkraise(self, aboveThis: Incomplete | None = None) -> None:
+        service = DriveService.getInstance()
+        thread = Thread(target = service.Download_logindata)
+        thread.start()
+        return super().tkraise(aboveThis)
     
     def getOldPassword(self):
         return self.OldPass.get()
@@ -90,8 +97,10 @@ class ChangePasswordWidget(ctk.CTkFrame):
         try :
             service = LoginService.getInstance()
             service.ChangePassword(OldPassword=OldPassword, NewPassword=NewPassword)
+            
             service = DriveService.getInstance()
-            service.Upload_logindata()
+            thread = Thread(target = service.Upload_logindata)
+            thread.start()
             messagebox.showinfo('Password Changed Successfully')
         except IncorrectPasswordException :
             return messagebox.showerror('Incorrect Password')

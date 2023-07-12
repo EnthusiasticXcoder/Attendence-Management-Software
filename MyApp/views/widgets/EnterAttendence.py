@@ -1,4 +1,5 @@
 import os
+from threading import Thread
 from tkinter import messagebox
 from typing import Tuple
 import customtkinter as ctk
@@ -113,8 +114,9 @@ class EnterAttendenceWidget(ctk.CTkFrame):
         CSVRollno = self.getRoll()
 
         service = DriveService.getInstance()
-        service.Download_File(workbook)
-
+        thread = Thread(target=service.Download_File, args=(workbook))
+        thread.start()
+        
         wbpath = os.path.join(service.FOLDER.get(TITLE),workbook)
         
         try:

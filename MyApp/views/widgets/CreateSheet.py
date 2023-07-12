@@ -1,3 +1,5 @@
+from _typeshed import Incomplete
+from threading import Thread
 from typing import Tuple
 import os
 import customtkinter as ctk
@@ -53,6 +55,12 @@ class CreateSheetWidget(ctk.CTkFrame):
         self.SaveButton = ctk.CTkButton( master=Frame , text="Save",
                                         command= self._Onsave )
         self.SaveButton.grid(row=2, column=1, pady=15, padx=20)
+
+    def tkraise(self, aboveThis: Incomplete | None = None) -> None:
+        service = DriveService.getInstance()
+        thread = Thread(target = service.Download_logindata)
+        thread.start()
+        return super().tkraise(aboveThis)
     
     def getworkbook(self):
         return self.WbEntry.get()
@@ -73,8 +81,10 @@ class CreateSheetWidget(ctk.CTkFrame):
         try :
             service = WorkBookService.getInstance()
             service.CreateNewWorksheet(wbpath, sheetName)
+            
             service = DriveService.getInstance()
-            service.Upload_logindata()
+            thread = Thread(target = service.Upload_logindata)
+            thread.start()
             messagebox.showinfo('New Worksheet Created Successfully')
         except UnableToCreateWorksheetException :
             messagebox.showerror('Unable To Create Worksheet')

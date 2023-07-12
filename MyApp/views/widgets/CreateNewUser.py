@@ -1,3 +1,5 @@
+from _typeshed import Incomplete
+from threading import Thread
 from typing import Tuple
 import customtkinter as ctk
 from tkinter import messagebox
@@ -63,6 +65,12 @@ class CreateNewUserWidget(ctk.CTkFrame):
                                       text="Save",
                                        command= lambda: self._OnSave(text) )
         self.SaveButton.grid(row=4, column=1, pady=20, padx=20)
+    
+    def tkraise(self, aboveThis: Incomplete | None = None) -> None:
+        service = DriveService.getInstance()
+        thread = Thread(target = service.Download_logindata)
+        thread.start()
+        return super().tkraise(aboveThis)
 
     def getUsername(self):
         return self.EnterUserName.get()
@@ -92,8 +100,10 @@ class CreateNewUserWidget(ctk.CTkFrame):
                     service.CreateLogin(UserName=Username, Password=Password, isadmin= True)
                 elif Level == CREATENEWUSER :
                     service.CreateLogin(UserName=Username, Password=Password)
+                
                 service = DriveService.getInstance()
-                service.Upload_logindata()
+                thread = Thread(target = service.Upload_logindata)
+                thread.start()
                 messagebox.showinfo('New Login Credentials Entered Successfully')
             else : 
                 return messagebox.showerror('Username Exists Try Another Username')

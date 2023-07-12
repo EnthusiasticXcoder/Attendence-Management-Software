@@ -1,8 +1,10 @@
+import os
 from tkinter import filedialog
 from typing import Tuple
 import customtkinter as ctk
 from tkinter import messagebox
 from PIL import Image
+from threading import Thread
 
 try : 
     import views.HomeView as HomeView
@@ -84,7 +86,12 @@ class AdminHomeView(HomeView._HomeView):
         self.right = ctk.CTkImage(light_image=Image.open('assets/icons/right.png'),
                                     dark_image=Image.open('assets/icons/right.png'),size=(25,25))
         self.pointerimg=ctk.CTkLabel(self,text="",image=self.right,fg_color='transparent')
-        self.MenuFrame = widgets.DownloadListView.DownloadListTile.Builder(master=self)
+    
+    def destroy(self):
+        service = DriveService.getInstance()
+        thread = Thread(target = service.Upload_all_File)
+        thread.start()
+        return super().destroy()
 
     def _ImportWorkbook(self):
         filePath = filedialog.askopenfilename(
@@ -96,14 +103,17 @@ class AdminHomeView(HomeView._HomeView):
             service = WorkBookService.getInstance()
             dirname = LoginService.__LoginData[USERNAME]
             service.addWorkbook(dirname=dirname, filesrc=filePath)
+
             service = DriveService.getInstance()
-            service.Create_new_file(filename=filePath.split("/")[-1])
+            thread = Thread(target=service.Create_new_file, kwargs=({'filename' : os.path.basename(filePath)}))
+            thread.start()
             messagebox.showinfo('WorkBook Imported Successfully')
     
     def  _show_Download(self):
         self.master.bind('<Button-1>', lambda e : self._hide_Download())
-        self.pointerimg.place(x=self.__getXCoords(63),y=self.__getYCoords(5))
+        self.MenuFrame = widgets.DownloadListView.DownloadListTile.Builder(master=self)
         self.MenuFrame.place(x=self.__getXCoords(88),y=self.__getYCoords(5))
+        self.pointerimg.place(x=self.__getXCoords(63),y=self.__getYCoords(5))
         self.DownloadButton.configure(command=self._hide_Download)
     
     def _hide_Download(self):

@@ -1,3 +1,5 @@
+from _typeshed import Incomplete
+from threading import Thread
 from typing import Tuple
 import customtkinter as ctk
 from tkinter import messagebox
@@ -50,6 +52,12 @@ class DeleteUserWidget(ctk.CTkFrame):
                                       text="Confirm",
                                       command= self._OnConfirm)
         self.ConfirmButton.grid(row=3, column=1, pady=30, padx=20)
+    
+    def tkraise(self, aboveThis: Incomplete | None = None) -> None:
+        service = DriveService.getInstance()
+        thread = Thread(target = service.Download_logindata)
+        thread.start()
+        return super().tkraise(aboveThis)
 
     def getUsername(self):
         return self.EnterUserName.get()
@@ -64,8 +72,10 @@ class DeleteUserWidget(ctk.CTkFrame):
         try :
             service = LoginService.getInstance()
             service.DeleteUser(UserName=Username) 
+            
             service = DriveService.getInstance()
-            service.Upload_logindata()
+            thread = Thread(target = service.Upload_logindata)
+            thread.start()
             messagebox.showinfo(f'Username: {Username} Deleted Sucessfully')
         except CannotDeleteCurrentLoginUserException :
             return messagebox.showerror('Cannot Delete Current Login User')
