@@ -4,6 +4,8 @@ import shutil
 
 from openpyxl import load_workbook , Workbook
 from openpyxl.utils import get_column_letter
+from xlcalculator import ModelCompiler
+from xlcalculator import Evaluator
 
 
 class InstanceAlreadyCreatedException(Exception) :
@@ -102,6 +104,22 @@ class WorkBookService :
                 temp.append('A')
         
         return EnrollmentList,worksheet[f'C10:C{numberofentry+10}'], temp, lambda: workbook.save(wbPath)
+        
+    def get_worksheet_from_path(self, wbpath: str):
+        ''' get list of all worksheet instance in the workbook '''
+        try : 
+            workbook = load_workbook(filename= wbpath)
+        except Exception :
+            raise FileNotFoundError
+        
+        sheetobject = [ workbook[sheet] for sheet in workbook.get_sheet_names()]
+        return sheetobject
+    
+    def get_evaluator(self, wbpath: str):
+        compiler = ModelCompiler()
+        new_model = compiler.read_and_parse_archive(wbpath)
+        evaluator = Evaluator(new_model)
+        return evaluator
         
     def _getCharacter(self, worksheet , isTheory):
         if isTheory :
