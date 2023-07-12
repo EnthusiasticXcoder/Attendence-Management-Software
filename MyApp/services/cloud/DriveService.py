@@ -2,9 +2,6 @@ import os
 from pydrive.auth import GoogleAuth
 from pydrive.drive import GoogleDrive
 
-try :
-    from services.login.LoginService import LoginService, USERNAME
-except : pass
 
 class InstanceAlreadyCreatedException(Exception) :
     ''' Exception when someone directly calls the initialiser'''
@@ -81,7 +78,7 @@ class DriveService :
             Gfile=self.drive.CreateFile({ 'id' : file[ID] })
             Gfile.GetContentFile(filepath)
 
-    def Upload_all_File(self,filename: str):
+    def Upload_all_File(self):
         ''' Function to Upload Files to Drive'''
         for file in self.File_List:
             filepath = os.path.join(os.getcwd(), self.FOLDER.get(TITLE), file[TITLE])

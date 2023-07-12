@@ -6,11 +6,8 @@ from tkinter import messagebox
 from PIL import Image
 from threading import Thread
 
-try : 
-    import views.HomeView as HomeView
-    import views.widgets as widgets
-except ModuleNotFoundError:
-    import HomeView , widgets
+import views.HomeView as HomeView
+import views.widgets as widgets
 
 try:
     from services.workbook.WorkbookService import WorkBookService

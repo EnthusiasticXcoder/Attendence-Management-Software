@@ -1,4 +1,3 @@
-from _typeshed import Incomplete
 from threading import Thread
 from typing import Tuple
 import os
@@ -56,7 +55,7 @@ class CreateSheetWidget(ctk.CTkFrame):
                                         command= self._Onsave )
         self.SaveButton.grid(row=2, column=1, pady=15, padx=20)
 
-    def tkraise(self, aboveThis: Incomplete | None = None) -> None:
+    def tkraise(self, aboveThis= None) -> None:
         service = DriveService.getInstance()
         thread = Thread(target = service.Download_logindata)
         thread.start()

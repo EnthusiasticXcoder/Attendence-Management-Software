@@ -1,4 +1,3 @@
-from _typeshed import Incomplete
 from threading import Thread
 from typing import Tuple
 import customtkinter as ctk
@@ -66,7 +65,7 @@ class CreateNewUserWidget(ctk.CTkFrame):
                                        command= lambda: self._OnSave(text) )
         self.SaveButton.grid(row=4, column=1, pady=20, padx=20)
     
-    def tkraise(self, aboveThis: Incomplete | None = None) -> None:
+    def tkraise(self, aboveThis = None) -> None:
         service = DriveService.getInstance()
         thread = Thread(target = service.Download_logindata)
         thread.start()

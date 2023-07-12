@@ -1,4 +1,3 @@
-from _typeshed import Incomplete
 from threading import Thread
 from typing import Tuple
 import customtkinter as ctk
@@ -53,7 +52,7 @@ class DeleteUserWidget(ctk.CTkFrame):
                                       command= self._OnConfirm)
         self.ConfirmButton.grid(row=3, column=1, pady=30, padx=20)
     
-    def tkraise(self, aboveThis: Incomplete | None = None) -> None:
+    def tkraise(self, aboveThis= None) -> None:
         service = DriveService.getInstance()
         thread = Thread(target = service.Download_logindata)
         thread.start()

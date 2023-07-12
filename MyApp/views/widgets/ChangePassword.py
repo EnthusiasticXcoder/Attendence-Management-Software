@@ -1,4 +1,3 @@
-from _typeshed import Incomplete
 from threading import Thread
 from typing import Tuple
 import customtkinter as ctk
@@ -64,7 +63,7 @@ class ChangePasswordWidget(ctk.CTkFrame):
                                         border_width=2,
                                          command= self._OnSave )
         self.SaveButton.grid(row=4, column=1, columnspan=1, pady=20, padx=20, sticky="we")
-    def tkraise(self, aboveThis: Incomplete | None = None) -> None:
+    def tkraise(self, aboveThis = None) -> None:
         service = DriveService.getInstance()
         thread = Thread(target = service.Download_logindata)
         thread.start()
