@@ -1,16 +1,9 @@
 from threading import Thread
 from typing import Tuple
 import customtkinter as ctk
-from tkinter import messagebox
 
 from views.loginView import LoginView
-from views.AdminHomeView import AdminHomeView
-from views.UserHomeView import UserHomeView
 
-from services.login.LoginService import LoginService, LEVELORADMIN, ADMIN
-from services.login.LoginService import (
-    IncorrectPasswordException, 
-    UsernameNotFoundException,)
 from services.cloud.DriveService import DriveService
 
 
@@ -43,31 +36,7 @@ class MyApp(ctk.CTk) :
 
         LoginFrame = LoginView(master= self)
         LoginFrame.grid(row=0,column=0,sticky='nsew')
-        LoginFrame.SetLoginFunction(command= self._OnLogin)
 
-    def _OnLogin(self, UserName: str, Password: str):
-        
-        if UserName.strip() == '' or Password.strip() == '' :
-            return messagebox.showerror('All Fields Required')
-        
-        try :  
-            Service = LoginService.getInstance()
-            LoginData = Service.TryLogin(UserName=UserName, Password=Password)
-            Service = DriveService.getInstance()
-            Service.setVariable(UserName)
-            Thread(target = Service.Download_all_files ).start()
-        except IncorrectPasswordException :
-            return messagebox.showerror('Incorrect Password')
-        except UsernameNotFoundException :
-            return messagebox.showerror('Username Not Found')
-        except Exception :
-            return messagebox.showerror('Unable To Login')
-        
-        if LoginData[LEVELORADMIN] == ADMIN:
-            AdminHomeView(master=self,Username=UserName).grid(row=0, column=0, sticky='nsew')
-        else :
-            UserHomeView(master=self, Username=UserName).grid(row=0, column=0, sticky='nsew')
-        
     def start(self):
         self.mainloop()
 

@@ -1,11 +1,21 @@
 import csv
 import base64
 
+import smtplib
+from email.message import EmailMessage
+import ssl
+
 
 USERNAME = 'Username'
 PASSWORD = 'Password'
 LEVELORADMIN = 'LevelorAdmin'
 ADMIN = 'Admin'
+SUBJECT = 'Request to forgot passward'
+BODY = '''
+    This mail is with the regards to the request to forget password 
+    made by a user of Attendence software .
+    the username and password for the same are given below .
+    '''
 
 class InstanceAlreadyCreatedException(Exception) :
     ''' Exception when someone directly calls the initialiser'''
@@ -135,7 +145,29 @@ class LoginService:
                             }
             else : 
                 raise UsernameNotFoundException
-            
+    
+    def send_Email(self,data):
+        ''' Function to send email '''
+        email_sender=' Sender Email Address'
+        email_password= " Secreat Password"
+        email_receiver = 'Reciver Email Address'
+       
+        email = EmailMessage()
+
+        email['From'] = email_sender
+        email['To'] = email_receiver
+        email['Subject']= SUBJECT
+
+        content = BODY + f'{data}'
+        email.set_content(content)
+        context = ssl.create_default_context()
+
+        with smtplib.SMTP_SSL('smtp.gmail.com', 465, context=context) as smtp:
+            smtp.login(email_sender, email_password)
+            smtp.sendmail (email_sender, email_receiver, email.as_string())
+
+        return email_receiver
+        
     def EncryptData(self , data: str ):
         ''' A Method To Encrypt Data Before Writing It To File '''
         return base64.b64encode(data.encode()).decode()

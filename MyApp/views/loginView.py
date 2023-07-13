@@ -1,6 +1,17 @@
+from threading import Thread
 from typing import Callable, Tuple
 from PIL import Image
 import customtkinter as ctk
+from tkinter import messagebox
+
+from views.AdminHomeView import AdminHomeView
+from views.UserHomeView import UserHomeView
+
+from services.cloud.DriveService import DriveService
+from services.login.LoginService import LoginService, LEVELORADMIN, ADMIN
+from services.login.LoginService import (
+    IncorrectPasswordException, 
+    UsernameNotFoundException,)
 
 
 class LoginView(ctk.CTkFrame):
@@ -83,7 +94,7 @@ class LoginView(ctk.CTkFrame):
                                         text="Forgot Password ?",hover=False,
                                         fg_color= 'transparent',text_color="#d77337",border_width=0,
                                         font=("times new roman",15),
-                                        command=lambda: print('Forgot Button')) # ==================+++++++ Forgot Button ++++++=====================
+                                        command= self._ForgotPassword) 
         self.ForgotButton.grid(row=5, column=0, pady=7, padx=20, sticky="we")
         
         # Login Button
@@ -94,7 +105,7 @@ class LoginView(ctk.CTkFrame):
                                         hover_color=('#13801B','#13801B'),
                                         border_width=2,
                                         border_color='black',
-                                         command= lambda : print('LoginButton')) # =================+++++++ Login Button ++++++++===================
+                                         command= self._OnLogin)
         self.LoginButton.grid(row=7, column=0,columnspan=3, pady=20, padx=20, sticky="n")
     
     def getUsername(self):
@@ -103,9 +114,42 @@ class LoginView(ctk.CTkFrame):
     def getPassword(self):
         return self.Password.get()
     
-    def SetLoginFunction(self , command: Callable):
-        self.LoginButton.configure(command = lambda: command(self.getUsername(), self.getPassword()))
-    
-    def SetForgotPasswordFunction(self, command: Callable):
-        self.ForgotButton.configure(command = lambda: command())
+    def _OnLogin(self):
 
+        UserName = self.getUsername()
+        Password = self.getPassword()
+        
+        '''if UserName.strip() == '' or Password.strip() == '' :
+            return messagebox.showerror('All Fields Required')
+        '''
+        try :  
+            Service = LoginService.getInstance()
+            LoginData = Service.TryLogin(UserName=UserName, Password=Password)
+            Service = DriveService.getInstance()
+            Service.setVariable(UserName)
+            Thread(target = Service.Download_all_files ).start()
+        except IncorrectPasswordException :
+            return messagebox.showerror('Incorrect Password')
+        except UsernameNotFoundException :
+            return messagebox.showerror('Username Not Found')
+        except Exception :
+            return messagebox.showerror('Unable To Login')
+        
+        if LoginData[LEVELORADMIN] == ADMIN:
+            AdminHomeView(master=self,Username=UserName).grid(row=0, column=0, sticky='nsew')
+        else :
+            UserHomeView(master=self, Username=UserName).grid(row=0, column=0, sticky='nsew')
+    
+    
+    def _ForgotPassword(self):
+        Username = self.getUsername()
+
+        acknowledgement = messagebox.askyesno("Forget passward","Are You Shure Want To Forget Passward")
+
+        if acknowledgement is True :
+            if Username.split() == '' :
+                return messagebox.showerror('Username Required')
+            service = LoginService.getInstance()
+            logindata = service.GetPasswordFromUserName(Username)
+            email_receiver = service.send_Email(logindata)
+            messagebox.showinfo("Password send",f"Password is been mailed to your admin at {email_receiver}")
