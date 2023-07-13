@@ -9,6 +9,6 @@ service = LoginService.getInstance()
 Username =input('Username : ')
 Password = input('Password : ')
 if service.CheackUserName(Username):
-    logindata = service.CreateLogin(Username, Password)
+    service.CreateLogin(Username, Password,isadmin=True)
     print('\n\nLogin created successfully\n\n')
-    print(logindata)
+    print(f'Username : {Username} and Password : {Password}')
