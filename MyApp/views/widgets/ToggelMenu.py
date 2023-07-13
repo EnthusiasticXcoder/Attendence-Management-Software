@@ -6,7 +6,7 @@ from PIL import Image,ImageTk
 
 class ToggelMenuWidget(ctk.CTkFrame):
 
-    _Buttonarray = []
+    _Buttonarray: list[list[ctk.CTkButton,str, ctk.CTkImage]] = []
 
     def __init__(self, master: any, 
                  width: int = 200, 
@@ -62,7 +62,9 @@ class ToggelMenuWidget(ctk.CTkFrame):
                               command= command,
                               )
         button.grid(row=row+2,column=0,padx=20,pady=3)
-        ToggelMenuWidget._Buttonarray.append([button,text,self.loadImage(imagepath,30)])
+        buttondata = [button,text,self.loadImage(imagepath,30)]
+        self._bind_pointer_label(buttondata)
+        ToggelMenuWidget._Buttonarray.append(buttondata)
         return button
     
     def close(self,e =None):
@@ -74,6 +76,7 @@ class ToggelMenuWidget(ctk.CTkFrame):
                                     width=30,
                                     fg_color='transparent')
                 button[0].grid_configure(column=0,pady=3)
+                self._bind_pointer_label(button)
         self.ModeChange.grid_forget()
         self.ModeSwitch.grid(row=15, column=0,sticky='e',columnspan=3,padx=20)
         self.toggelButton.bind("<Button-1>",self.open)
@@ -87,9 +90,33 @@ class ToggelMenuWidget(ctk.CTkFrame):
                                     width=130,
                                     fg_color=ctk.ThemeManager.theme['CTkButton']['fg_color'])
                 button[0].grid_configure(column=1,pady=6)
+                self._unbind_pointer_label(button[0])
         self.ModeSwitch.grid_forget()
         self.ModeChange.grid(row=15, column=1,padx=20,sticky='ew',columnspan=3)
         self.toggelButton.bind("<Button-1>",self.close)
+    
+    def _bind_pointer_label(self, button: list[ctk.CTkButton,str,ctk.CTkImage]):
+        ''' Function to show labels on pointing to the buttons in closed toggel mode'''
+        label = ctk.CTkLabel(master=self,text="",fg_color="#2A2D2E",text_color='white',
+                                anchor='center',height=18,width=70,font=("Helvetica", 12),
+                                corner_radius=5,justify='center')
+        button[0].bind('<Enter>', lambda e : self._show_pointer_label(label=label, button=button[0],text=button[1]))
+        button[0].bind('<Leave>', lambda e : self._hide_pointer_label(label=label))
+        label.after_idle(label.tkraise)
+    
+    def _unbind_pointer_label(self, button: ctk.CTkButton):
+        button.unbind('<Enter>')
+        button.unbind('<Leave>')
+
+    def _show_pointer_label(self, label: ctk.CTkLabel, text: str, button: ctk.CTkButton):
+        label.configure(text = text.replace(" ","\n",1))
+        label.place(x=10, y = self.__getycoords(button) )
+
+    def _hide_pointer_label(self, label: ctk.CTkLabel):
+        label.place_forget()
+
+    def __getycoords(self, button: ctk.CTkButton):
+        return (button.winfo_y()+button.winfo_height()+3)/self._get_widget_scaling()
     
     def change_mode(self,ModeSwitch):
         if ModeSwitch.get() == 0:
