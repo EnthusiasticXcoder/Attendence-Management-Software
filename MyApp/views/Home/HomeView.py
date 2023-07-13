@@ -3,9 +3,9 @@ import tkinter as tk
 import customtkinter as ctk
 
 try :
-    import views.widgets.ToggelMenu as ToggelMenu
+    from views import widgets
 except ModuleNotFoundError :
-    import widgets.ToggelMenu as ToggelMenu
+    pass
 
 class _HomeView(ctk.CTkFrame):
     def __init__(self, master: any, 
@@ -71,5 +71,5 @@ class _HomeView(ctk.CTkFrame):
         self.BottomFrame.grid_rowconfigure(0, weight=1)
 
         # Toggel Menu Widget 
-        self.ToggelMenu = ToggelMenu.ToggelMenuWidget(master=self.BottomFrame)
+        self.ToggelMenu = widgets.ToggelMenuWidget(master=self.BottomFrame)
         self.ToggelMenu.grid(row=0, column=0, sticky="nswe")

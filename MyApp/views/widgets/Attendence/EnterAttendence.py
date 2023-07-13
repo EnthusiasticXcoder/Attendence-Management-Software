@@ -5,7 +5,7 @@ from typing import Tuple
 import customtkinter as ctk
 
 from helpers.CTkCalender import CTkDateEntry
-from views.widgets.AttendenceListView import AttendenceListTile
+from views import widgets
 
 from services.cloud.DriveService import DriveService, TITLE
 from services.workbook.WorkbookService import WorkBookService, CreateNewWorksheetException
@@ -130,7 +130,7 @@ class EnterAttendenceWidget(ctk.CTkFrame):
         except Exception :
             messagebox.showerror('Unable To Enter Attendence')
             
-        AttendenceListTile.Builder(master=self.MainFrame, status=status, enrollment=enrollment, names=names,command=command, workbook=workbook)
+        widgets.AttendenceListTile.Builder(master=self.MainFrame, status=status, enrollment=enrollment, names=names,command=command, workbook=workbook)
 
 
 

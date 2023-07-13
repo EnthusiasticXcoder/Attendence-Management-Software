@@ -1,11 +1,11 @@
 from threading import Thread
-from typing import Callable, Tuple
+from typing import Tuple
 from PIL import Image
 import customtkinter as ctk
 from tkinter import messagebox
 
-from views.AdminHomeView import AdminHomeView
-from views.UserHomeView import UserHomeView
+from views import AdminHomeView
+from views import UserHomeView
 
 from services.cloud.DriveService import DriveService
 from services.login.LoginService import LoginService, LEVELORADMIN, ADMIN
@@ -136,10 +136,9 @@ class LoginView(ctk.CTkFrame):
             return messagebox.showerror('Unable To Login')
         
         if LoginData[LEVELORADMIN] == ADMIN:
-            AdminHomeView(master=self,Username=UserName).grid(row=0, column=0, sticky='nsew')
+            AdminHomeView(master=self.master,Username=UserName).grid(row=0, column=0, sticky='nsew')
         else :
-            UserHomeView(master=self, Username=UserName).grid(row=0, column=0, sticky='nsew')
-    
+            UserHomeView(master=self.master, Username=UserName).grid(row=0, column=0, sticky='nsew')
     
     def _ForgotPassword(self):
         Username = self.getUsername()

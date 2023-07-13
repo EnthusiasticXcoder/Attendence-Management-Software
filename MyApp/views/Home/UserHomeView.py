@@ -2,7 +2,7 @@ from PIL import Image
 from typing import Tuple
 import customtkinter as ctk
 
-import views.HomeView as HomeView
+import views.Home.HomeView as HomeView
 import views.widgets as widgets
 
 
