@@ -84,6 +84,8 @@ class CreateSheetWidget(ctk.CTkFrame):
             service = DriveService.getInstance()
             thread = Thread(target = service.Upload_logindata)
             thread.start()
+            thread = Thread(target=service.Upload_File, args=(Workbook))
+            thread.start()
             messagebox.showinfo('New Worksheet Created Successfully')
         except UnableToCreateWorksheetException :
             messagebox.showerror('Unable To Create Worksheet')

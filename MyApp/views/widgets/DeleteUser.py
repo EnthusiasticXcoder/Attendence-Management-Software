@@ -75,6 +75,8 @@ class DeleteUserWidget(ctk.CTkFrame):
             service = DriveService.getInstance()
             thread = Thread(target = service.Upload_logindata)
             thread.start()
+            thread = Thread(target= service.Delete_folder, args=(Username))
+            thread.start()
             messagebox.showinfo(f'Username: {Username} Deleted Sucessfully')
         except CannotDeleteCurrentLoginUserException :
             return messagebox.showerror('Cannot Delete Current Login User')

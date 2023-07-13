@@ -97,6 +97,10 @@ class CreateNewUserWidget(ctk.CTkFrame):
             if service.CheackUserName(Username):
                 if Level == CREATENEWADMIN :
                     service.CreateLogin(UserName=Username, Password=Password, isadmin= True)
+
+                    service = DriveService.getInstance()
+                    thread = Thread(target = service.Create_Folder, args=(Username))
+                    thread.start()
                 elif Level == CREATENEWUSER :
                     service.CreateLogin(UserName=Username, Password=Password)
                 
