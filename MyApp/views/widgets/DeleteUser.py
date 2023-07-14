@@ -1,12 +1,13 @@
-from threading import Thread
 from typing import Tuple
 import customtkinter as ctk
-from tkinter import messagebox
 
-from services.login.LoginService import LoginService
-from services.login.LoginService import CannotDeleteCurrentLoginUserException, UnableToDeleteException
-from services.cloud.DriveService import DriveService
-
+import utilities
+from utilities.constants import (
+    DELETE_ACCOUNT,
+    TIMES_NEW_ROMAN,
+    ENTER_USERNAME,
+    CONFIRM
+)
 
 class DeleteUserWidget(ctk.CTkFrame):
     def __init__(self, master: any, 
@@ -38,24 +39,22 @@ class DeleteUserWidget(ctk.CTkFrame):
         Frame.grid(row=0, column=0, sticky='')
         # Lable Text widget
         label = ctk.CTkLabel( master=Frame,
-                              text="Delete Account",
-                              font=("times new roman",18))
-        label.grid(row=0, column=0, pady=10, sticky="w",padx=10)
+                              text= DELETE_ACCOUNT,
+                              font=( TIMES_NEW_ROMAN, 18))
+        label.grid(row=0, column=0, pady=10, sticky= ctk.W, padx=10)
         # User Name of the Account to Be deleted
         self.EnterUserName = ctk.CTkEntry(master=Frame,
                                           width=120,
-                                          placeholder_text="Enter UserName" )
-        self.EnterUserName.grid(row=1, column=0, columnspan=2, pady=10, padx=20, sticky="we")
+                                          placeholder_text= ENTER_USERNAME )
+        self.EnterUserName.grid(row=1, column=0, columnspan=2, pady=10, padx=20, sticky= ctk.EW)
         # Confirm Button
         self.ConfirmButton = ctk.CTkButton(master=Frame,
-                                      text="Confirm",
+                                      text= CONFIRM,
                                       command= self._OnConfirm)
         self.ConfirmButton.grid(row=3, column=1, pady=30, padx=20)
     
     def tkraise(self, aboveThis= None) -> None:
-        service = DriveService.getInstance()
-        thread = Thread(target = service.Download_logindata)
-        thread.start()
+        utilities.download_logindata()
         return super().tkraise(aboveThis)
 
     def getUsername(self):
@@ -64,23 +63,4 @@ class DeleteUserWidget(ctk.CTkFrame):
     def _OnConfirm(self):
         ''' Function When Confirm Button Is Pressed'''
         Username = self.getUsername()
-
-        if Username.strip() == '':
-            return messagebox.showerror('All Fields Are Required')
-
-        try :
-            service = LoginService.getInstance()
-            service.DeleteUser(UserName=Username) 
-            
-            service = DriveService.getInstance()
-            thread = Thread(target = service.Upload_logindata)
-            thread.start()
-            thread = Thread(target= service.Delete_folder, args=(Username))
-            thread.start()
-            messagebox.showinfo(f'Username: {Username} Deleted Sucessfully')
-        except CannotDeleteCurrentLoginUserException :
-            return messagebox.showerror('Cannot Delete Current Login User')
-        except UnableToDeleteException :
-            return messagebox.showerror('Unable To Delete User')
-        except Exception :
-            return messagebox.showerror('Unable To Delete User')
+        utilities.delete_user(Username)

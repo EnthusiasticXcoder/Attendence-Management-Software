@@ -1,18 +1,13 @@
-from threading import Thread
 from typing import Tuple
 from PIL import Image
 import customtkinter as ctk
-from tkinter import messagebox
 
 from views import AdminHomeView
 from views import UserHomeView
 
-from services.cloud.DriveService import DriveService
-from services.login.LoginService import LoginService, LEVELORADMIN, ADMIN
-from services.login.LoginService import (
-    IncorrectPasswordException, 
-    UsernameNotFoundException,)
-
+import utilities
+from utilities.constants import LOGIN, USERNAME, PASSWORD, FORGOT_PASSWORD, BOOKMEN_OLD_STYLE, TIMES_NEW_ROMAN
+from utilities.constants.routes import BACKGROUND_IMAGE, EYE_ICON
 
 class LoginView(ctk.CTkFrame):
     def __init__(self, master: any, 
@@ -42,10 +37,10 @@ class LoginView(ctk.CTkFrame):
         self.grid_columnconfigure(0,weight=1)
 
         # Add Background Image
-        self.background_Image=ctk.CTkImage(light_image=Image.open("assets/images/bg3.jpg"),
-                                dark_image=Image.open("assets/images/bg3.jpg"),
+        self.background_Image=ctk.CTkImage(light_image=Image.open(BACKGROUND_IMAGE),
+                                dark_image=Image.open(BACKGROUND_IMAGE),
                                 size=(self.winfo_screenwidth(),self.winfo_screenheight()))
-        ctk.CTkLabel(self,image=self.background_Image,text=None,fg_color='white').grid(row=0,column=0,sticky='nsew')
+        ctk.CTkLabel(self,image=self.background_Image,text=None,fg_color='white').grid(row=0,column=0,sticky = ctk.NSEW)
 
         # Container Frame For Login Frame
         LoginFrame = ctk.CTkFrame(master=self,corner_radius=20,bg_color='black')
@@ -59,24 +54,24 @@ class LoginView(ctk.CTkFrame):
 
         # Log in Text Heading
         label = ctk.CTkLabel(master=LoginFrame,
-                                text="Log in",
-                                font=("Bookman Old Style", -25))  # font name and size in px
-        label.grid(row=0, column=0,columnspan=3, pady=10,sticky='n')
+                                text= LOGIN,
+                                font=ctk.CTkFont(BOOKMEN_OLD_STYLE, -25))
+        label.grid(row=0, column=0,columnspan=3, pady=10,sticky = ctk.N)
 
         # TextEntry Field to enter text - USERNAME
         self.UserName = ctk.CTkEntry(master=LoginFrame,width=300,
-                                  placeholder_text="UserName",)
-        self.UserName.grid(row=2, column=0, columnspan=3, padx=20, sticky="we")
+                                  placeholder_text= USERNAME,)
+        self.UserName.grid(row=2, column=0, columnspan=3, padx=20, sticky = ctk.EW)
 
         # TextEntry Field to enter text - PASSWORD
         self.Password = ctk.CTkEntry(master=LoginFrame,
-                                  placeholder_text="Password",
+                                  placeholder_text=PASSWORD,
                                   show='*',)
-        self.Password.grid(row=4, column=0, columnspan=3, padx=20, sticky="we")
+        self.Password.grid(row=4, column=0, columnspan=3, padx=20, sticky = ctk.EW)
 
         # EyeIcon On the left side of password to view entered Password
-        self.eye_icon = ctk.CTkImage(light_image=Image.open("assets/icons/eye.png"),
-                                     dark_image=Image.open("assets/icons/eye.png"),size=(20,20))
+        self.eye_icon = ctk.CTkImage(light_image=Image.open(EYE_ICON),
+                                     dark_image=Image.open(EYE_ICON),size=(20,20))
         IconWidget=ctk.CTkLabel(master=LoginFrame,
                                 image=self.eye_icon,
                                 text="",
@@ -84,71 +79,57 @@ class LoginView(ctk.CTkFrame):
                                 width=20,
                                 cursor='hand2',
                                 fg_color=('#F9F9FA',"#343638"))
-        IconWidget.grid(row=4, column=0, columnspan=3, padx=26, sticky="e")
+        IconWidget.grid(row=4, column=0, columnspan=3, padx=26, sticky = ctk.E)
 
-        IconWidget.bind('<Enter>',lambda : self.Password.configure(show=''))
-        IconWidget.bind('<Leave>',lambda : self.Password.configure(show='*'))
+        IconWidget.bind('<Enter>',lambda e : self.Password.configure(show=''))
+        IconWidget.bind('<Leave>',lambda e : self.Password.configure(show='*'))
         
         # Forgot Password Button 
         self.ForgotButton = ctk.CTkButton(master=LoginFrame,cursor='hand2',
-                                        text="Forgot Password ?",hover=False,
+                                        text=FORGOT_PASSWORD ,hover=False,
                                         fg_color= 'transparent',text_color="#d77337",border_width=0,
-                                        font=("times new roman",15),
+                                        font=ctk.CTkFont(TIMES_NEW_ROMAN, 15),
                                         command= self._ForgotPassword) 
-        self.ForgotButton.grid(row=5, column=0, pady=7, padx=20, sticky="we")
+        self.ForgotButton.grid(row=5, column=0, pady=7, padx=20, sticky = ctk.EW)
         
         # Login Button
         self.LoginButton = ctk.CTkButton(master=LoginFrame,
-                                        text="Log in",
-                                        font=("Bookman Old Style", -15),
+                                        text=LOGIN,
+                                        font=(BOOKMEN_OLD_STYLE, -15),
                                         fg_color='#1ABD0D',
                                         hover_color=('#13801B','#13801B'),
                                         border_width=2,
                                         border_color='black',
                                          command= self._OnLogin)
-        self.LoginButton.grid(row=7, column=0,columnspan=3, pady=20, padx=20, sticky="n")
+        self.LoginButton.grid(row=7, column=0,columnspan=3, pady=20, padx=20, sticky = ctk.N)
     
     def getUsername(self):
-        return self.UserName.get()
+        username = self.UserName.get()
+        self.UserName.delete('0',ctk.END)
+        return username
     
     def getPassword(self):
-        return self.Password.get()
+        password = self.Password.get()
+        self.Password.delete('0',ctk.END)
+        return password
     
     def _OnLogin(self):
 
-        UserName = self.getUsername()
+        Username = self.getUsername()
         Password = self.getPassword()
         
-        '''if UserName.strip() == '' or Password.strip() == '' :
-            return messagebox.showerror('All Fields Required')
-        '''
-        try :  
-            Service = LoginService.getInstance()
-            LoginData = Service.TryLogin(UserName=UserName, Password=Password)
-            Service = DriveService.getInstance()
-            Service.setVariable(UserName)
-            Thread(target = Service.Download_all_files ).start()
-        except IncorrectPasswordException :
-            return messagebox.showerror('Incorrect Password')
-        except UsernameNotFoundException :
-            return messagebox.showerror('Username Not Found')
-        except Exception :
-            return messagebox.showerror('Unable To Login')
-        
-        if LoginData[LEVELORADMIN] == ADMIN:
-            AdminHomeView(master=self.master,Username=UserName).grid(row=0, column=0, sticky='nsew')
-        else :
-            UserHomeView(master=self.master, Username=UserName).grid(row=0, column=0, sticky='nsew')
+        state = utilities.authentatic_credentials(Username, Password)
+
+        match state :
+            case 'loginstate' :
+                return   
+            case 'AdminHomeState' :
+                return AdminHomeView(master=self.master,Username=Username).grid(row=0, column=0, sticky= ctk.NSEW)
+            case 'UserHomeState' :
+                return UserHomeView(master=self.master, Username=Username).grid(row=0, column=0, sticky= ctk.NSEW)
     
     def _ForgotPassword(self):
         Username = self.getUsername()
+        utilities.send_mail(Username)
 
-        acknowledgement = messagebox.askyesno("Forget passward","Are You Shure Want To Forget Passward")
-
-        if acknowledgement is True :
-            if Username.split() == '' :
-                return messagebox.showerror('Username Required')
-            service = LoginService.getInstance()
-            logindata = service.GetPasswordFromUserName(Username)
-            email_receiver = service.send_Email(logindata)
-            messagebox.showinfo("Password send",f"Password is been mailed to your admin at {email_receiver}")
+        

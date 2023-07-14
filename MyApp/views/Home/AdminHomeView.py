@@ -1,23 +1,39 @@
-import os
-from tkinter import filedialog
 from typing import Tuple
 import customtkinter as ctk
-from tkinter import messagebox
 from PIL import Image
-from threading import Thread
 
 import views.Home.HomeView as HomeView
 import views.widgets as widgets
 
-try:
-    from services.workbook.WorkbookService import WorkBookService
-    from services.login.LoginService import LoginService , USERNAME
-    from services.cloud.DriveService import DriveService
-except : pass
+import utilities
+from utilities.constants import (
+    CREATENEWADMIN, 
+    CREATENEWUSER,
+    HOME,
+    CHANGE_PASSWORD,
+    CREATE_NEW_ADMIN,
+    CREATE_NEW_SHEET,
+    CREATE_NEW_USER,
+    DOWNLOAD_EXCEL,
+    DELETE_ENTRY,
+    LOGOUT,
+    ENTER_ATTENDENCE,
+    IMPORT_WORKBOOK,
+)
+from utilities.constants.routes import (
+    HOME_ICON,
+    CHANGE_PASSWORD_ICON,
+    CREATE_ADMIN_ICON,
+    CREATE_SHEET_ICON,
+    CREATE_USER_ICON,
+    DOWNLOAD_EXCEL_ICON,
+    DELETE_ICON,
+    LOG_OUT_ICON,
+    ENTER_ATTENDENCE_ICON,
+    IMPORT_WORKBOOK_ICON,
+    RIGHT_POINTER_ICON,
+)
 
-
-CREATENEWADMIN ='Create New Admin'
-CREATENEWUSER = 'Create New User' 
 
 class AdminHomeView(HomeView._HomeView):
     def __init__(self, master: any,
@@ -46,66 +62,48 @@ class AdminHomeView(HomeView._HomeView):
         self._ShowDownloadmenu = True
         # initialising widgets for button actions
         Home = ctk.CTkFrame(master=self.BottomFrame)
-        Home.grid(row=0, column=1, sticky="nswe")
+        Home.grid(row=0, column=1, sticky= ctk.NSEW)
 
         CreateSheet = widgets.CreateSheetWidget(master=self.BottomFrame)
-        CreateSheet.grid(row=0, column=1, sticky="nswe")
+        CreateSheet.grid(row=0, column=1, sticky= ctk.NSEW)
 
         EnterAttendence = widgets.EnterAttendenceWidget(master=self.BottomFrame)
-        EnterAttendence.grid(row=0, column=1, sticky="nswe")
+        EnterAttendence.grid(row=0, column=1, sticky= ctk.NSEW)
         
         CreateNewAdmin = widgets.CreateNewUserWidget(master=self.BottomFrame,text=CREATENEWADMIN)
-        CreateNewAdmin.grid(row=0, column=1, sticky="nswe")
+        CreateNewAdmin.grid(row=0, column=1, sticky= ctk.NSEW)
 
         CreateNewUser = widgets.CreateNewUserWidget(master=self.BottomFrame,text=CREATENEWUSER)
-        CreateNewUser.grid(row=0, column=1, sticky="nswe")
+        CreateNewUser.grid(row=0, column=1, sticky= ctk.NSEW)
 
         ChangePassword = widgets.ChangePasswordWidget(master=self.BottomFrame)
-        ChangePassword.grid(row=0, column=1, sticky="nswe")
+        ChangePassword.grid(row=0, column=1, sticky= ctk.NSEW)
 
         DeleteUser = widgets.DeleteUserWidget(master=self.BottomFrame)
-        DeleteUser.grid(row=0, column=1, sticky="nswe")
+        DeleteUser.grid(row=0, column=1, sticky= ctk.NSEW)
 
         Home.tkraise()
 
         # adding Buttons to Toggel Menu Widget
-        self.ToggelMenu.addButton(imagepath='assets/icons/home.png',text='Home',command= Home.tkraise )
-        self.ToggelMenu.addButton(imagepath='assets/icons/file-plus.png',text='Create New Sheet',command= CreateSheet.tkraise)
-        self.ToggelMenu.addButton(imagepath='assets/icons/arrow-down-circle.png',text='Import Workbook',command= self._ImportWorkbook)
-        self.ToggelMenu.addButton(imagepath='assets/icons/edit.png',text='Enter Attendence',command= EnterAttendence.tkraise)
-        self.DownloadButton = self.ToggelMenu.addButton(imagepath='assets/icons/file-text.png',text='Download Excel',command= self._show_Download)
-        self.ToggelMenu.addButton(imagepath='assets/icons/user-plus.png',text='Create New Admin',command=CreateNewAdmin.tkraise)
-        self.ToggelMenu.addButton(imagepath='assets/icons/users.png',text='Create New User',command=CreateNewUser.tkraise)
-        self.ToggelMenu.addButton(imagepath='assets/icons/change.webp',text='Change Password',command=ChangePassword.tkraise)
-        self.ToggelMenu.addButton(imagepath='assets/icons/delete.png',text='Delete Entry',command= DeleteUser.tkraise)
-        self.ToggelMenu.addButton(imagepath='assets/icons/log-out.png',text='Log Out',command= self.destroy)
+        self.ToggelMenu.addButton(imagepath= HOME_ICON,text= HOME,command= Home.tkraise )
+        self.ToggelMenu.addButton(imagepath= CREATE_SHEET_ICON,text= CREATE_NEW_SHEET,command= CreateSheet.tkraise)
+        self.ToggelMenu.addButton(imagepath= IMPORT_WORKBOOK_ICON,text= IMPORT_WORKBOOK,command= utilities.import_workbook)
+        self.ToggelMenu.addButton(imagepath= ENTER_ATTENDENCE_ICON,text= ENTER_ATTENDENCE,command= EnterAttendence.tkraise)
+        self.DownloadButton = self.ToggelMenu.addButton(imagepath= DOWNLOAD_EXCEL_ICON,text= DOWNLOAD_EXCEL,command= self._show_Download)
+        self.ToggelMenu.addButton(imagepath= CREATE_ADMIN_ICON,text=CREATE_NEW_ADMIN,command=CreateNewAdmin.tkraise)
+        self.ToggelMenu.addButton(imagepath= CREATE_USER_ICON, text= CREATE_NEW_USER,command=CreateNewUser.tkraise)
+        self.ToggelMenu.addButton(imagepath= CHANGE_PASSWORD_ICON,text=CHANGE_PASSWORD,command=ChangePassword.tkraise)
+        self.ToggelMenu.addButton(imagepath= DELETE_ICON,text= DELETE_ENTRY,command= DeleteUser.tkraise)
+        self.ToggelMenu.addButton(imagepath= LOG_OUT_ICON,text= LOGOUT,command= self.destroy)
     
-        self.right = ctk.CTkImage(light_image=Image.open('assets/icons/right.png'),
-                                    dark_image=Image.open('assets/icons/right.png'),size=(25,25))
+        self.right = ctk.CTkImage(light_image=Image.open(RIGHT_POINTER_ICON),
+                                    dark_image=Image.open(RIGHT_POINTER_ICON),size=(25,25))
         self.pointerimg=ctk.CTkLabel(self,text="",image=self.right,fg_color='transparent')
     
     def destroy(self):
-        service = DriveService.getInstance()
-        thread = Thread(target = service.Upload_all_File)
-        thread.start()
+        utilities.upload_all_workbook()
         return super().destroy()
 
-    def _ImportWorkbook(self):
-        filePath = filedialog.askopenfilename(
-        initialdir='D:/',
-        title="Import A File",
-        filetypes=[("xlsx files","*.xlsx")]
-        )
-        if filePath :
-            service = WorkBookService.getInstance()
-            dirname = LoginService.__LoginData[USERNAME]
-            service.addWorkbook(dirname=dirname, filesrc=filePath)
-
-            service = DriveService.getInstance()
-            thread = Thread(target=service.Create_new_file, kwargs=({'filename' : os.path.basename(filePath)}))
-            thread.start()
-            messagebox.showinfo('WorkBook Imported Successfully')
-    
     def  _show_Download(self):
         self.master.bind('<Button-1>', self._hide_Download)
         self.MenuFrame = widgets.DownloadListTile.Builder(master=self)

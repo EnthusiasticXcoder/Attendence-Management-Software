@@ -1,14 +1,14 @@
-from threading import Thread
 from typing import Tuple
 import customtkinter as ctk
-from tkinter import messagebox
 
-from services.login.LoginService import LoginService
-from services.cloud.DriveService import DriveService
-
-
-CREATENEWADMIN ='Create New Admin'
-CREATENEWUSER = 'Create New User' 
+import utilities
+from utilities.constants import (
+    TIMES_NEW_ROMAN,
+    ENTER_USERNAME,
+    ENTER_PASSWORD,
+    CONFIRM_PASSWORD,
+    SAVE
+)
 
 class CreateNewUserWidget(ctk.CTkFrame):
     def __init__(self, master: any, 
@@ -42,33 +42,31 @@ class CreateNewUserWidget(ctk.CTkFrame):
         # Label Text Widget
         label = ctk.CTkLabel( master=Frame,
                               text=text,
-                              font=("times new roman",18))
-        label.grid(row=0, column=0, pady=10, sticky="w",padx=10)
+                              font= ctk.CTkFont( TIMES_NEW_ROMAN, 18))
+        label.grid(row=0, column=0, pady=10, sticky= ctk.W, padx=10)
         # Enter UserName Widget for username input
         self.EnterUserName = ctk.CTkEntry(master=Frame,
                                           width=120,
-                                          placeholder_text="Enter UserName" )
+                                          placeholder_text= ENTER_USERNAME )
         self.EnterUserName.grid(row=1, column=0, columnspan=2, pady=7, padx=20, sticky="we")
         # Enter Password Widget for password input
         self.EnterPassword = ctk.CTkEntry(master=Frame,
                                   width=120,
-                                  placeholder_text="Enter Password" )
+                                  placeholder_text= ENTER_PASSWORD )
         self.EnterPassword.grid(row=2, column=0, columnspan=2, pady=7, padx=20, sticky="we")
         # confirm Password Widget for password input
         self.ConfirmPassword = ctk.CTkEntry(master=Frame,
                                           width=120,
-                                          placeholder_text="Confirm Password" )
+                                          placeholder_text= CONFIRM_PASSWORD)
         self.ConfirmPassword.grid(row=3, column=0, columnspan=2, pady=7, padx=20, sticky="we")
         # Save Button for saving the user
         self.SaveButton = ctk.CTkButton(master=Frame,
-                                      text="Save",
+                                      text= SAVE,
                                        command= lambda: self._OnSave(text) )
         self.SaveButton.grid(row=4, column=1, pady=20, padx=20)
     
     def tkraise(self, aboveThis = None) -> None:
-        service = DriveService.getInstance()
-        thread = Thread(target = service.Download_logindata)
-        thread.start()
+        utilities.download_logindata()
         return super().tkraise(aboveThis)
 
     def getUsername(self):
@@ -86,29 +84,4 @@ class CreateNewUserWidget(ctk.CTkFrame):
         Password = self.getPassword()
         ConfirmPassword = self.getConfirmPassword()
 
-        if Username.strip() == '' or Password.strip() == '' or ConfirmPassword.strip() == '':
-            return messagebox.showerror('All Fields Are Required')
-
-        if Password != ConfirmPassword :
-            return messagebox.showerror('New Password And Confirm New Password Are Not Same')
-        
-        try :
-            service = LoginService.getInstance()
-            if service.CheackUserName(Username):
-                if Level == CREATENEWADMIN :
-                    service.CreateLogin(UserName=Username, Password=Password, isadmin= True)
-
-                    service = DriveService.getInstance()
-                    thread = Thread(target = service.Create_Folder, args=(Username))
-                    thread.start()
-                elif Level == CREATENEWUSER :
-                    service.CreateLogin(UserName=Username, Password=Password)
-                
-                service = DriveService.getInstance()
-                thread = Thread(target = service.Upload_logindata)
-                thread.start()
-                messagebox.showinfo('New Login Credentials Entered Successfully')
-            else : 
-                return messagebox.showerror('Username Exists Try Another Username')
-        except Exception :
-            return messagebox.showerror('Unable To Create New User')
+        utilities.create_new_login(Username,Password,ConfirmPassword,Level)

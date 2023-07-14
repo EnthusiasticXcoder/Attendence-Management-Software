@@ -5,6 +5,8 @@ import customtkinter as ctk
 import views.Home.HomeView as HomeView
 import views.widgets as widgets
 
+import utilities
+
 
 class UserHomeView(HomeView._HomeView):
     def __init__(self, master: any, 
@@ -31,13 +33,13 @@ class UserHomeView(HomeView._HomeView):
                          overwrite_preferred_drawing_method, **kwargs)
         # Main Frame Widget for Activities
         # initialising widgets for button actions
-        CreateSheet = widgets.CreateSheet.CreateSheetWidget(master=self.BottomFrame)
+        CreateSheet = widgets.CreateSheetWidget(master=self.BottomFrame)
         CreateSheet.grid(row=0, column=1, sticky="nswe")
 
-        EnterAttendence = widgets.EnterAttendence.EnterAttendenceWidget(master=self.BottomFrame)
+        EnterAttendence = widgets.EnterAttendenceWidget(master=self.BottomFrame)
         EnterAttendence.grid(row=0, column=1, sticky="nswe")
 
-        ChangePassword = widgets.ChangePassword.ChangePasswordWidget(master=self.BottomFrame)
+        ChangePassword = widgets.ChangePasswordWidget(master=self.BottomFrame)
         ChangePassword.grid(row=0, column=1, sticky="nswe")
 
         Home = ctk.CTkFrame(master=self.BottomFrame)
@@ -54,25 +56,28 @@ class UserHomeView(HomeView._HomeView):
         self.right = ctk.CTkImage(light_image=Image.open('assets/icons/right.png'),
                                     dark_image=Image.open('assets/icons/right.png'),size=(25,25))
         self.pointerimg=ctk.CTkLabel(self,text="",image=self.right,fg_color='transparent')
-        self.MenuFrame = widgets.DownloadListView.DownloadListTile.Builder(master=self)
+    
+    def destroy(self):
+        utilities.upload_all_workbook()
+        return super().destroy()
         
     def  _show_Download(self):
-        self.master.bind('<Button-1>', lambda e : self._hide_Download())
-        self.pointerimg.place(x=self.__getXCoords(63),y=self.__getYCoords(5))
-        self.MenuFrame.place(x=self.__getXCoords(88),y=self.__getYCoords(5))
+        self.master.bind('<Button-1>', self._hide_Download)
+        self.MenuFrame = widgets.DownloadListTile.Builder(master=self)
+        self.MenuFrame.place(x=self.__getXCoords(24),y=self.__getYCoords(5))
+        self.pointerimg.place(x=self.__getXCoords(0),y=self.__getYCoords(5))
         self.DownloadButton.configure(command=self._hide_Download)
     
-    def _hide_Download(self):
-        self.master.unbind('<Button-1>')
+    def _hide_Download(self, e=None):
         self.pointerimg.place_forget()
         self.MenuFrame.place_forget()
         self.DownloadButton.configure(command=self._show_Download)
-    
+        self.master.unbind('<Button-1>')
+
     def __getXCoords(self, x):
-        return (self.DownloadButton.winfo_rootx()-self.winfo_rootx()+x)/self._get_widget_scaling()
+        Xplace = self.DownloadButton.winfo_x()+x
+        return (Xplace + 67 if self.DownloadButton._text_label==None else Xplace + 162)/self._get_widget_scaling()
+
     def __getYCoords(self, y):
         return (self.DownloadButton.winfo_rooty()-self.winfo_rooty()+y)/self._get_widget_scaling()
-
-
-CREATENEWADMIN ='Create New Admin'
-CREATENEWUSER = 'Create New User' 
+    

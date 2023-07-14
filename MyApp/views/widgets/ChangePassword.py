@@ -1,12 +1,15 @@
-from threading import Thread
 from typing import Tuple
 import customtkinter as ctk
-from tkinter import messagebox
 
-from services.login.LoginService import LoginService
-from services.login.LoginService import IncorrectPasswordException
-from services.cloud.DriveService import DriveService
-
+import utilities
+from utilities.constants import (
+    CHANGE_PASSWORD, 
+    OLD_PASSWORD,
+    NEW_PASSWORD,
+    CONFIRM_NEW_PASSWORD,
+    SAVE,
+    TIMES_NEW_ROMAN,
+)
 
 class ChangePasswordWidget(ctk.CTkFrame):
     def __init__(self, master: any, 
@@ -38,35 +41,33 @@ class ChangePasswordWidget(ctk.CTkFrame):
         Frame.grid(row=0, column=0, sticky='')
         # Lable text Heading
         label = ctk.CTkLabel(master=Frame,
-                            text="Change Password",
-                            font=("times new roman",18)) 
+                            text= CHANGE_PASSWORD,
+                            font= ctk.CTkFont( TIMES_NEW_ROMAN, 18)) 
         label.grid(row=0, column=0, pady=10, padx=10)
         # Old password Entry Widget for input Old password
         self.OldPass = ctk.CTkEntry(master=Frame,
                                   width=120,
-                                  placeholder_text="Old Password")
+                                  placeholder_text= OLD_PASSWORD)
         # New password Entry Widget for input New password
         self.NewPass = ctk.CTkEntry(master=Frame,
                                   width=120,
-                                  placeholder_text="New Password")
+                                  placeholder_text= NEW_PASSWORD)
         # Confirm New password Entry Widget for input xonfirm New password
         self.ConfirmPass = ctk.CTkEntry(master=Frame,
                                   width=120,
-                                  placeholder_text="Confirm New Password")
+                                  placeholder_text= CONFIRM_NEW_PASSWORD)
         
-        self.OldPass.grid(row=1, column=0, columnspan=2, pady=7, padx=20, sticky="we")
-        self.NewPass.grid(row=2, column=0, columnspan=2, pady=7, padx=20, sticky="we")
-        self.ConfirmPass.grid(row=3, column=0, columnspan=2, pady=7, padx=20, sticky="we")
+        self.OldPass.grid(row=1, column=0, columnspan=2, pady=7, padx=20, sticky= ctk.EW)
+        self.NewPass.grid(row=2, column=0, columnspan=2, pady=7, padx=20, sticky= ctk.EW)
+        self.ConfirmPass.grid(row=3, column=0, columnspan=2, pady=7, padx=20, sticky= ctk.EW)
         # Save Button
         self.SaveButton = ctk.CTkButton(master=Frame,
-                                        text="Save",
+                                        text= SAVE,
                                         border_width=2,
                                          command= self._OnSave )
-        self.SaveButton.grid(row=4, column=1, columnspan=1, pady=20, padx=20, sticky="we")
+        self.SaveButton.grid(row=4, column=1, columnspan=1, pady=20, padx=20, sticky= ctk.EW)
     def tkraise(self, aboveThis = None) -> None:
-        service = DriveService.getInstance()
-        thread = Thread(target = service.Download_logindata)
-        thread.start()
+        utilities.download_logindata()
         return super().tkraise(aboveThis)
     
     def getOldPassword(self):
@@ -84,27 +85,6 @@ class ChangePasswordWidget(ctk.CTkFrame):
         NewPassword = self.getNewPassword()
         ConfirmPassword = self.getConfirmNewPassword()
 
-        if OldPassword.strip() == '' or NewPassword.strip() == '' or ConfirmPassword.strip() == '':
-            return messagebox.showerror('All Fields Are Required')
-
-        if OldPassword == NewPassword :
-            return messagebox.showerror('Old Password And New Password Must Be Different')
-            
-        if NewPassword != ConfirmPassword :
-            return messagebox.showerror('New Password And Confirm New Password Are Not Same')
-        
-        try :
-            service = LoginService.getInstance()
-            service.ChangePassword(OldPassword=OldPassword, NewPassword=NewPassword)
-            
-            service = DriveService.getInstance()
-            thread = Thread(target = service.Upload_logindata)
-            thread.start()
-            messagebox.showinfo('Password Changed Successfully')
-        except IncorrectPasswordException :
-            return messagebox.showerror('Incorrect Password')
-        except Exception :
-            return messagebox.showerror('Unable To Change Password')
-        
+        utilities.change_password(OldPassword, NewPassword, ConfirmPassword)
 
         

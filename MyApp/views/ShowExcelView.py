@@ -1,19 +1,19 @@
+import os
 from threading import Thread
 from tkinter import filedialog
 from typing import Tuple
 import customtkinter as ctk
 from PIL import Image
 
-from services.cloud.DriveService import DriveService
-from services.workbook.WorkbookService import WorkBookService , get_column_letter
-
+from utilities.constants import TITLE
+import utilities
 
 class ShowExcelView(ctk.CTkToplevel):
-    def __init__(self, wbPath: str, *args, fg_color: str | Tuple[str, str] | None = None, **kwargs):
+    def __init__(self, wbName: str, *args, fg_color: str | Tuple[str, str] | None = None, **kwargs):
         super().__init__(*args, fg_color=fg_color, **kwargs)
         
         self.geometry('1000x500')
-        self.title(f'SHEET VIEW {wbPath}')
+        self.title(f'SHEET VIEW {wbName}')
         
         img = ctk.CTkImage(light_image=Image.open("assets/icons/download.png"),
                            dark_image=Image.open("assets/icons/download.png"),size=(35,35))
@@ -22,15 +22,15 @@ class ShowExcelView(ctk.CTkToplevel):
                                 text = "Download",
                                 fg_color="green",text_color="white",image=img,
                                 font=("times new roman",15,'bold'),
-                                command= lambda: self._Ondownload(wbPath))  
+                                command= lambda: self._Ondownload(wbName))  
         B_Download.pack(anchor = 'ne',padx=100,ipadx=50,pady=20)
 
         Tab = ctk.CTkTabview(master=self)
         Tab.pack(fill='both', expand=1)
 
-        service = WorkBookService.getInstance()
-        worksheets = service.get_worksheet_from_path(wbPath)
-        evaluator = service.get_evaluator(wbPath)
+        wbPath = os.path.join(os.getcwd(), utilities.get_folder().get(TITLE),wbName)
+        worksheets = utilities.get_worksheet_from_path(wbPath)
+        evaluator = utilities.get_evaluator(wbPath)
         
         for worksheet in worksheets :
             newtab = Tab.add(worksheet.title)    
@@ -41,23 +41,19 @@ class ShowExcelView(ctk.CTkToplevel):
 
     def BuildTab(self, master: any, worksheet, evaluator):
         ''' Function to build excel worksheet '''
-        MAXC=worksheet.max_column
-        MAXR=0
-        while True:
-            if worksheet['A'+str(MAXR+10)].value == None  :
-                break  
-            MAXR+=1
-        MAXR +=11
 
+        MAXC=worksheet.max_column
+        MAXR=utilities.get_number_of_entry(worksheet)
+        
         frame1=ctk.CTkFrame(master=master,width=1200)
         frame1.grid(row=0,column=0,sticky='nsew')
 
         indexc=[i for i in range(MAXC)]
         indexr=[i for i in range(7)]
-
+        
         frame1.rowconfigure(indexr,weight=0)
         frame1.columnconfigure(indexc,weight=1)
-
+        
         frame2=ctk.CTkFrame(master=master)
         frame2.grid(row=1,column=0,sticky='nsew')
 
@@ -87,7 +83,7 @@ class ShowExcelView(ctk.CTkToplevel):
                             if i.value is None:
                                 values.append(i.value)
                             else:
-                                alfacol=get_column_letter(column+1)
+                                alfacol= utilities.get_column_letter(column+1)
                                 try:val = evaluator.evaluate(f'{worksheet.title}!{alfacol}{row}')
                                 except: val =0
                                 values.append(val) if val != None else values.append(0)
@@ -106,7 +102,7 @@ class ShowExcelView(ctk.CTkToplevel):
                 if table :
                     row-=2
                     frame2.rowconfigure(row,minsize=55)
-                else: frame1.rowconfigure(row,minsize=40)
+                else: frame1.rowconfigure(row,minsize=40) 
                 continue
 
             if table:
@@ -143,7 +139,7 @@ class ShowExcelView(ctk.CTkToplevel):
 
             if 2<column<22 or 22<column<31 :
                 try:
-                    char=get_column_letter(column+1)
+                    char= utilities.get_column_letter(column+1)
                     val=worksheet[f'{char}9'].value
                     if val==None : 
                         continue
@@ -157,9 +153,8 @@ class ShowExcelView(ctk.CTkToplevel):
             cell.grid(row=row,column=column,rowspan=span,sticky='nw')
 
     def Headcell(self,master,column,text,height=80,head=False):
-        '''  '''
+          
         border_color=None
-        text_font=('Times New Roman', 11, 'bold')
         width=200
         height=80
         text_font= ctk.CTkFont('Times New Roman',11,'bold')
@@ -183,7 +178,7 @@ class ShowExcelView(ctk.CTkToplevel):
                         border_color=border_color,
                         border_width=0, 
                         corner_radius=2, 
-                        #font=text_font, 
+                        font=text_font, 
                         width=width, height=height,
                         activate_scrollbars=False,border_spacing=0,)
 
@@ -193,7 +188,7 @@ class ShowExcelView(ctk.CTkToplevel):
         return textbox
 
     def Cell(self, master,text) :
-        '''   '''
+           
         return ctk.CTkLabel(master=master,
                             corner_radius=0,
                             width=int(len(str(text))*9.1), 
@@ -202,7 +197,7 @@ class ShowExcelView(ctk.CTkToplevel):
                             font=("Roboto Medium", -16,'bold'))
 
     def Tabularcell(self,master,text,column,maxr):
-        '''   '''
+           
         width= 200 if column==2 else 30
         width= 50 if column in [22,31,32] else width
         width= 150 if column==1 else width 
@@ -224,6 +219,4 @@ class ShowExcelView(ctk.CTkToplevel):
         path=filedialog.asksaveasfilename(filetypes=[("Excel Workbook","*.xlsx")],defaultextension='.xlsx')
 
         if path :
-            service = DriveService.getInstance()
-            thread = Thread(target=service.Download_File, kwargs={'filename' : wbname, 'path' : path })
-            thread.start()
+            utilities.download_file(workbook=wbname, path=path)

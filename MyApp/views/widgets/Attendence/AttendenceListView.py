@@ -1,27 +1,32 @@
-from threading import Thread
-from tkinter import messagebox
 from typing import Callable
 import customtkinter as ctk
 
-from services.cloud.DriveService import DriveService
-
+import utilities
+from utilities.constants import (
+    SUBMIT, 
+    CANCEL, 
+    ROBOTO_MEDIUM, 
+    BOLD, 
+    SUCCESS, 
+    ATTENDENCE_ENTERED_SUCCESSFULLY
+)
 
 class AttendenceListTile :
     @staticmethod
     def Builder(master: any, enrollment: list, names: list, status: list, command: Callable, workbook: str):
         Frame = ctk.CTkFrame(master=master,fg_color='transparent')
-        Frame.grid(row=10,column=0,sticky='nsew',columnspan=4,pady=50)
-
+        Frame.grid(row=10,column=0,sticky= ctk.NSEW,columnspan=4,pady=50)
+        
         for serial, enroll, name, PorA in zip(range(1,len(status+1)), enrollment, names, status):
             AttendenceListTile(master=Frame,serial=serial, enroll=enroll, name=name, status=PorA) 
 
         ctk.CTkButton(master=Frame,
-                      text="Submit",
+                      text= SUBMIT,
                       command= lambda : AttendenceListTile._Onsubmit(Frame, command, workbook)
-                      ).pack(side='right',pady=50,padx=10)
+                      ).pack(side= ctk.RIGHT,pady=50,padx=10)
         
         ctk.CTkButton(master=Frame,
-                      text="Cancel",
+                      text= CANCEL,
                       command= Frame.destroy
                       ).pack(pady=50)
         
@@ -42,18 +47,16 @@ class AttendenceListTile :
                             bg_color="black",corner_radius=0,
                             fg_color= 'light green' if text == 'P' else 'red',
                             height=40,)
-        frame.pack(side='left')
+        frame.pack(side=ctk.LEFT)
         ctk.CTkLabel(master=frame,text=text,width=width,
-                     font=("Roboto Medium", -16,'bold'),
+                     font=(ROBOTO_MEDIUM, -16, BOLD),
                      anchor='w'
                      ).pack(padx=8,pady=8)
     
     def _Onsubmit(Frame: ctk.CTkFrame, command: Callable, workbook: str):
         ''' Function on submiting the Attendence'''
         command()
-        service=DriveService.getInstance()
-        thread = Thread(service.Upload_File, args=(workbook))
-        thread.start()
-        messagebox.showinfo('Attendence Entered Sucessfully')
+        utilities.upload_file(workbook)
+        utilities.messagebox.showinfo(SUCCESS, ATTENDENCE_ENTERED_SUCCESSFULLY)
         Frame.destroy()    
 
