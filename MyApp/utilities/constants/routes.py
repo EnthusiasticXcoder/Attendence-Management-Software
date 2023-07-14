@@ -14,3 +14,5 @@ RIGHT_POINTER_ICON = 'assets/icons/right.png'
 OPEN_FILE_ICON = 'assets/icons/green.png'
 CLOASE_ICON = 'assets/icons/x red.png'
 
+LOGINDATA = 'data\logindata.csv'
+SHEETDATA = 'data\sheetdata.csv'

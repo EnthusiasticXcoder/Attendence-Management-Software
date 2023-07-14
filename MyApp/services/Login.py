@@ -6,8 +6,8 @@ from utilities.exception import (
     UsernameNotFoundException,
     IncorrectPasswordException,
     CannotDeleteCurrentLoginUserException )
-
 from utilities.constants import USERNAME, PASSWORD, ADMIN, LEVELORADMIN
+from utilities.constants.routes import LOGINDATA
 
 
 class LoginService:
@@ -26,7 +26,7 @@ class LoginService:
         ''' A Method for trying to LogIn using given Credentials 
          Return LoginData '''
         
-        with open('logindata.csv',mode='r') as file:
+        with open( LOGINDATA ,mode='r') as file:
             reader = csv.DictReader(file,fieldnames=[USERNAME , PASSWORD , LEVELORADMIN])
             for data in reader :
                 if self.DecryptData(data[USERNAME]) == UserName :
@@ -41,13 +41,13 @@ class LoginService:
             else : raise UsernameNotFoundException
                
     def CreateLogin(self , UserName: str , Password: str , isadmin: bool = False ):
-        ''' A Method To Create Login And Append Login Data To The logindata.csv File'''
+        ''' A Method To Create Login And Append Login Data To The logindata File'''
         if isadmin : 
             level =ADMIN
         else : 
             level = LoginService.__LoginData[USERNAME]
         
-        with open('logindata.csv',mode='a') as file:
+        with open( LOGINDATA ,mode='a') as file:
             writer = csv.DictWriter(file,fieldnames=[USERNAME , PASSWORD , LEVELORADMIN])
             writer.writerow({
                     USERNAME : self.EncryptData(UserName),
@@ -57,7 +57,7 @@ class LoginService:
     def CheackUserName(self , UserName: str):
         ''' Method to cheack wether the username is valid or not 
         Return True for Vaild Username and False for invalid UserName'''
-        with open('logindata.csv',mode='r') as file:
+        with open( LOGINDATA ,mode='r') as file:
             reader = csv.DictReader(file,fieldnames=[USERNAME])
             usernames = [self.DecryptData(data[USERNAME]) for data in reader]
             if UserName in usernames : return False
@@ -70,7 +70,7 @@ class LoginService:
         if LoginService.__LoginData[USERNAME] == UserName :
             raise CannotDeleteCurrentLoginUserException
     
-        with open('logindata.csv',mode='r') as file :
+        with open( LOGINDATA ,mode='r') as file :
             reader = csv.DictReader(file,fieldnames=[USERNAME , PASSWORD , LEVELORADMIN]) 
             dataarray = []
             for data in reader :
@@ -82,7 +82,7 @@ class LoginService:
         if NumberOfDelete == 0 : 
             raise UnableToDeleteException
 
-        with open('logindata.csv', mode='w') as file:
+        with open( LOGINDATA , mode='w') as file:
             writer = csv.DictWriter(file,fieldnames=[USERNAME , PASSWORD , LEVELORADMIN])
             writer.writerows(dataarray)
         return NumberOfDelete
@@ -90,7 +90,7 @@ class LoginService:
     def ChangePassword(self, OldPassword: str, NewPassword: str):
         ''' A Method To change password of current login '''
         UserName = LoginService.__LoginData[USERNAME]
-        with open('logindata.csv',mode='r') as file :
+        with open( LOGINDATA ,mode='r') as file :
             reader = csv.DictReader(file,fieldnames=[USERNAME , PASSWORD , LEVELORADMIN])        
             dataarray = []
             for data in reader :
@@ -101,14 +101,14 @@ class LoginService:
                     else : raise IncorrectPasswordException
                 dataarray.append(data) 
 
-        with open('logindata.csv', mode='w') as file:
+        with open( LOGINDATA , mode='w') as file:
             writer = csv.DictWriter(file,fieldnames=[USERNAME , PASSWORD , LEVELORADMIN])
             writer.writerows(dataarray)    
         
     def GetPasswordFromUserName(self, UserName: str):
         ''' Return LoginData From UserName'''
         
-        with open('logindata.csv',mode='r') as file:
+        with open( LOGINDATA ,mode='r') as file:
             reader = csv.DictReader(file,fieldnames=[USERNAME , PASSWORD , LEVELORADMIN])
             for data in reader :
                 if self.DecryptData(data[USERNAME]) == UserName :
