@@ -46,7 +46,7 @@ Once you have completed these steps, you should have the Attendance-Management-S
 To Create Login Credentials for Login run `Logincredentials.py` file or execute the following command:
 
 ```shell
-python Logincredentials.py
+python MyApp/Logincredentials.py
 ```
 
 To run Attendence Software, execute the following command:
