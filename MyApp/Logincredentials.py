@@ -1,11 +1,11 @@
-from MyApp.services.login.LoginService import LoginService
+from services import LoginService
 
 
 print('''
 ============================================================================================
     ----------------------------------------------------------------------------------
 ============================================================================================\n\n''')
-service = LoginService.getInstance()
+service = LoginService()
 Username =input('Username : ')
 Password = input('Password : ')
 if service.CheackUserName(Username):
