@@ -52,7 +52,7 @@ python MyApp/Logincredentials.py
 To run Attendence Software, execute the following command:
 
 ```shell
-python MyApp/maincode.py
+python MyApp/main.py
 ```
 
 Feel free to reach out if you have any questions or need further assistance.
