@@ -1,5 +1,6 @@
 import os
-from tkinter import filedialog, messagebox
+from tkinter import messagebox
+from customtkinter import filedialog
 
 import services
 from utilities.constants import USERNAME, TITLE
