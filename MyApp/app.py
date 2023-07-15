@@ -2,13 +2,8 @@ from typing import Tuple
 import customtkinter as ctk
 
 from views.loginView import LoginView
-
 import utilities
 
-
-def main():
-    app = MyApp()
-    app.start()
 
 class MyApp(ctk.CTk) :
      
@@ -21,7 +16,6 @@ class MyApp(ctk.CTk) :
         return super().__new__(cls)
 
     def __init__(self, fg_color: str | Tuple[str, str] | None = None, **kwargs):
-        ctk.set_appearance_mode('dark')
         super().__init__(fg_color, **kwargs)
 
         self.wm_title(MyApp._TITLE)
@@ -37,6 +31,3 @@ class MyApp(ctk.CTk) :
 
     def start(self):
         self.mainloop()
-
-if __name__=='__main__':
-    main()
