@@ -13,6 +13,12 @@ Attendance-Management-Software is a desktop application developed in Python for 
 - Store attendance data securely in Google Drive using pydrive
 - Easy to use and user-friendly interface
 
+---
+
+![](documentation_images/Example_3.png)
+
+`documentation_images/Example_1.png`
+
 ## Future Enhancements
 As this is the developer's first big project, the Attendance-Management-Software lacks some features that can be added in future updates. Some of the possible enhancements are:
 - Automatic calculation of attendance percentages and grades
@@ -20,6 +26,8 @@ As this is the developer's first big project, the Attendance-Management-Software
 - Generating reports and charts for attendance data analysis
 - Improving the user interface and user experience to make the software more intuitive and user-friendly
 - Adding error handling and logging features to make it easier to debug and troubleshoot any issues that may arise
+
+---
 
 ![](documentation_images/Example_2.png)
 
