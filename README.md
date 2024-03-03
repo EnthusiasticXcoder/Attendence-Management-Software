@@ -69,4 +69,4 @@ Feel free to reach out if you have any questions or need further assistance.
 Attendance-Management-Software is developed by Anshul Verma. If you would like to contribute to this project, please feel free to submit a pull request.
 
 ## License
-Attendance-Management-Software is licensed under the [MIT License](LICENSE). See the LICENSE file for more details.
+Attendance-Management-Software is licensed under the [Apache-2.0 License](LICENSE). See the LICENSE file for more details.
